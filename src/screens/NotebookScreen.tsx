@@ -35,7 +35,6 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const sliderWidth = 280;
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingNoteText, setEditingNoteText] = useState("");
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -86,7 +85,6 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const handleEditNote = (noteId: string, noteText: string) => {
     setEditingNoteId(noteId);
     setEditingNoteText(noteText);
-    setShowEditModal(true);
   };
 
   const handleSaveNote = () => {
@@ -95,13 +93,11 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
       updateNote(notebookId, editingNoteId, editingNoteText.trim());
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-    setShowEditModal(false);
     setEditingNoteId(null);
     setEditingNoteText("");
   };
 
   const handleCancelEdit = () => {
-    setShowEditModal(false);
     setEditingNoteId(null);
     setEditingNoteText("");
   };
@@ -260,54 +256,95 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             </View>
           )}
 
-          {notebook.notes.map((note) => (
-            <Pressable
-              key={note.id}
-              onPress={() => handleEditNote(note.id, note.text)}
-              className="rounded-2xl p-6 mb-4 relative overflow-hidden active:opacity-90"
-              style={{ backgroundColor: backgroundColorWithOpacity }}
-            >
-              {/* Lined paper effect */}
-              <View className="absolute inset-0">
-                {[...Array(20)].map((_, i) => (
-                  <View
-                    key={i}
-                    className="absolute left-0 right-0 border-b"
-                    style={{
-                      borderColor: notebook.textColor,
-                      opacity: 0.1,
-                      top: 30 + i * 24,
-                    }}
-                  />
-                ))}
-              </View>
+          {notebook.notes.map((note) => {
+            const isEditing = editingNoteId === note.id;
 
-              <Text
-                className="text-base leading-6 mb-4"
-                style={{
-                  color: notebook.textColor,
-                  lineHeight: 24,
-                  paddingTop: 6,
-                }}
+            return (
+              <View
+                key={note.id}
+                className="rounded-2xl p-6 mb-4 relative overflow-hidden"
+                style={{ backgroundColor: backgroundColorWithOpacity }}
               >
-                {note.text}
-              </Text>
+                {/* Lined paper effect */}
+                <View className="absolute inset-0">
+                  {[...Array(20)].map((_, i) => (
+                    <View
+                      key={i}
+                      className="absolute left-0 right-0 border-b"
+                      style={{
+                        borderColor: notebook.textColor,
+                        opacity: 0.1,
+                        top: 30 + i * 24,
+                      }}
+                    />
+                  ))}
+                </View>
 
-              <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: notebook.textColor, opacity: 0.2 }}>
-                <Text className="text-xs" style={{ color: notebook.textColor, opacity: 0.6 }}>
-                  {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}
-                </Text>
-                <View className="flex-row gap-3">
-                  <Pressable onPress={() => handleShare(note.text)} className="active:opacity-70">
-                    <Ionicons name="share-outline" size={20} color={notebook.textColor} />
+                {isEditing ? (
+                  <View>
+                    <TextInput
+                      value={editingNoteText}
+                      onChangeText={setEditingNoteText}
+                      multiline
+                      autoFocus
+                      className="text-base leading-6 mb-4"
+                      style={{
+                        color: notebook.textColor,
+                        lineHeight: 24,
+                        paddingTop: 6,
+                        minHeight: 100,
+                      }}
+                    />
+                    <View className="flex-row gap-3 mb-4">
+                      <Pressable
+                        onPress={handleCancelEdit}
+                        className="flex-1 bg-gray-500/50 rounded-lg py-2 items-center active:opacity-70"
+                      >
+                        <Text className="text-white text-sm font-semibold">Cancel</Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={handleSaveNote}
+                        disabled={!editingNoteText.trim()}
+                        className="flex-1 bg-blue-600 rounded-lg py-2 items-center active:opacity-70"
+                        style={{ opacity: !editingNoteText.trim() ? 0.5 : 1 }}
+                      >
+                        <Text className="text-white text-sm font-semibold">Save</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                ) : (
+                  <Pressable onPress={() => handleEditNote(note.id, note.text)}>
+                    <Text
+                      className="text-base leading-6 mb-4"
+                      style={{
+                        color: notebook.textColor,
+                        lineHeight: 24,
+                        paddingTop: 6,
+                      }}
+                    >
+                      {note.text}
+                    </Text>
                   </Pressable>
-                  <Pressable onPress={() => handleDeleteNote(note.id)} className="active:opacity-70">
-                    <Ionicons name="trash-outline" size={20} color={notebook.textColor} />
-                  </Pressable>
+                )}
+
+                <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: notebook.textColor, opacity: 0.2 }}>
+                  <Text className="text-xs" style={{ color: notebook.textColor, opacity: 0.6 }}>
+                    {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}
+                  </Text>
+                  {!isEditing && (
+                    <View className="flex-row gap-3">
+                      <Pressable onPress={() => handleShare(note.text)} className="active:opacity-70">
+                        <Ionicons name="share-outline" size={20} color={notebook.textColor} />
+                      </Pressable>
+                      <Pressable onPress={() => handleDeleteNote(note.id)} className="active:opacity-70">
+                        <Ionicons name="trash-outline" size={20} color={notebook.textColor} />
+                      </Pressable>
+                    </View>
+                  )}
                 </View>
               </View>
-            </Pressable>
-          ))}
+            );
+          })}
         </ScrollView>
 
         {/* Recording Button */}
@@ -407,62 +444,6 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             >
               <Text className="text-white text-lg font-bold">Save Color</Text>
             </Pressable>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Edit Note Modal */}
-      <Modal
-        visible={showEditModal}
-        animationType="slide"
-        transparent
-        onRequestClose={handleCancelEdit}
-      >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-white rounded-t-3xl p-6 pb-10">
-            <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-2xl font-bold text-gray-900">Edit Note</Text>
-              <Pressable
-                onPress={handleCancelEdit}
-                className="active:opacity-70"
-              >
-                <Ionicons name="close" size={28} color="#374151" />
-              </Pressable>
-            </View>
-
-            <Text className="text-base font-semibold text-gray-700 mb-4">
-              Make corrections to your note
-            </Text>
-
-            <TextInput
-              value={editingNoteText}
-              onChangeText={setEditingNoteText}
-              placeholder="Enter note text"
-              multiline
-              numberOfLines={8}
-              textAlignVertical="top"
-              className="bg-gray-100 rounded-xl px-4 py-4 text-base text-gray-900 mb-6"
-              placeholderTextColor="#9CA3AF"
-              autoFocus
-              style={{ minHeight: 150 }}
-            />
-
-            <View className="flex-row gap-3">
-              <Pressable
-                onPress={handleCancelEdit}
-                className="flex-1 bg-gray-200 rounded-xl py-4 items-center active:opacity-70"
-              >
-                <Text className="text-gray-900 text-base font-semibold">Cancel</Text>
-              </Pressable>
-              <Pressable
-                onPress={handleSaveNote}
-                disabled={!editingNoteText.trim()}
-                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
-                style={{ opacity: !editingNoteText.trim() ? 0.5 : 1 }}
-              >
-                <Text className="text-white text-base font-semibold">Save</Text>
-              </Pressable>
-            </View>
           </View>
         </View>
       </Modal>
