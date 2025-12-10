@@ -131,19 +131,33 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   </View>
                 </Pressable>
               ))}
+
+              {/* Add new notebook button in grid */}
+              <Pressable
+                onPress={handleAddNotebook}
+                className="w-[48%] aspect-[1/1.6] rounded-2xl border-4 border-dashed border-amber-300 bg-amber-100 items-center justify-center active:opacity-70"
+                style={{
+                  marginRight: notebooks.slice(2).length % 2 === 0 ? "4%" : 0,
+                }}
+              >
+                <Ionicons name="add" size={48} color="#D97706" />
+                <Text className="text-xl font-semibold text-amber-900 mt-2">New Notebook</Text>
+              </Pressable>
             </View>
           )}
 
-          {/* Add new notebook button */}
-          <View className="items-center mt-4">
-            <Pressable
-              onPress={handleAddNotebook}
-              className="w-56 h-16 rounded-xl border-3 border-dashed border-amber-300 bg-amber-100 items-center justify-center flex-row active:opacity-70"
-            >
-              <Ionicons name="add" size={32} color="#D97706" />
-              <Text className="text-lg font-semibold text-amber-900 ml-2">Add Notebook</Text>
-            </Pressable>
-          </View>
+          {/* Add new notebook button for initial layout */}
+          {notebooks.length <= 2 && notebooks.length % 2 === 0 && (
+            <View className="flex-row justify-between">
+              <Pressable
+                onPress={handleAddNotebook}
+                className="w-[48%] aspect-[1/1.6] rounded-2xl border-4 border-dashed border-amber-300 bg-amber-100 items-center justify-center active:opacity-70"
+              >
+                <Ionicons name="add" size={48} color="#D97706" />
+                <Text className="text-xl font-semibold text-amber-900 mt-2">New Notebook</Text>
+              </Pressable>
+            </View>
+          )}
         </ScrollView>
       </View>
 
