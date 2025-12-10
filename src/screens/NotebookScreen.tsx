@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, Pressable, ScrollView, TextInput, Alert, Share } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
@@ -9,6 +9,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { transcribeAudio } from "../api/transcribe-audio";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 
 type NotebookScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Notebook">;
 type NotebookScreenRouteProp = RouteProp<RootStackParamList, "Notebook">;
@@ -21,12 +24,67 @@ interface NotebookScreenProps {
 export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, route }) => {
   const { notebookId } = route.params;
   const notebook = useNotebookStore((s) => s.getNotebook(notebookId));
+  const updateNotebook = useNotebookStore((s) => s.updateNotebook);
   const addNote = useNotebookStore((s) => s.addNote);
   const deleteNote = useNotebookStore((s) => s.deleteNote);
 
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(notebook?.color || "#E63946");
+
+  const sliderPosition = useSharedValue(0);
+
+  // Rainbow colors for the gradient
+  const rainbowColors = [
+    "#FF0000", // Red
+    "#FF7F00", // Orange
+    "#FFFF00", // Yellow
+    "#00FF00", // Green
+    "#0000FF", // Blue
+    "#4B0082", // Indigo
+    "#9400D3", // Violet
+  ];
+
+  const hslToHex = (h: number, s: number, l: number): string => {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, "0");
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+
+  const getColorFromPosition = (position: number): string => {
+    const hue = position * 360;
+    return hslToHex(hue, 100, 50);
+  };
+
+  const pan = Gesture.Pan()
+    .onUpdate((event) => {
+      const newPosition = Math.max(0, Math.min(1, event.x / 300));
+      sliderPosition.value = newPosition;
+      const color = getColorFromPosition(newPosition);
+      setSelectedColor(color);
+    })
+    .onEnd(() => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: sliderPosition.value * 300 - 15 }],
+  }));
+
+  const handleSaveColor = () => {
+    if (notebook) {
+      updateNotebook(notebookId, { color: selectedColor });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setShowColorPicker(false);
+  };
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -38,6 +96,14 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
       headerTitleStyle: {
         fontWeight: "bold",
       },
+      headerRight: () => (
+        <Pressable
+          onPress={() => setShowColorPicker(true)}
+          className="mr-4 active:opacity-70"
+        >
+          <Ionicons name="color-palette-outline" size={24} color="#FFFFFF" />
+        </Pressable>
+      ),
     });
   }, [navigation, notebook]);
 
@@ -247,6 +313,85 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
           </Text>
         </View>
       </SafeAreaView>
+
+      {/* Color Picker Modal */}
+      <Modal
+        visible={showColorPicker}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowColorPicker(false)}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-2xl font-bold text-gray-900">Color Change</Text>
+              <Pressable
+                onPress={() => setShowColorPicker(false)}
+                className="active:opacity-70"
+              >
+                <Ionicons name="close" size={28} color="#374151" />
+              </Pressable>
+            </View>
+
+            <Text className="text-base font-semibold text-gray-700 mb-4">
+              Select Notebook Color
+            </Text>
+
+            {/* Rainbow Gradient Slider */}
+            <View className="mb-6">
+              <View className="h-16 rounded-2xl overflow-hidden mb-4" style={{ width: 300 }}>
+                <LinearGradient
+                  colors={["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ flex: 1 }}
+                />
+              </View>
+              <GestureDetector gesture={pan}>
+                <View style={{ width: 300, height: 30 }}>
+                  <Animated.View
+                    style={[
+                      animatedStyle,
+                      {
+                        width: 30,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: selectedColor,
+                        borderWidth: 3,
+                        borderColor: "#FFFFFF",
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 4,
+                        elevation: 5,
+                      },
+                    ]}
+                  />
+                </View>
+              </GestureDetector>
+            </View>
+
+            {/* Color Preview */}
+            <View className="mb-6">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Preview</Text>
+              <View
+                className="h-24 rounded-2xl items-center justify-center"
+                style={{ backgroundColor: selectedColor }}
+              >
+                <Ionicons name="book-outline" size={48} color="#FFFFFF" />
+              </View>
+            </View>
+
+            {/* Save Button */}
+            <Pressable
+              onPress={handleSaveColor}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+            >
+              <Text className="text-white text-lg font-bold">Save Color</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
