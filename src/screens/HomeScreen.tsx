@@ -54,32 +54,32 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 key={notebook.id}
                 onPress={() => handleNotebookPress(notebook.id)}
                 onLongPress={() => handleEditNotebook(notebook.id)}
-                className="w-[47%] aspect-[3/4] rounded-xl shadow-lg overflow-hidden active:opacity-70"
+                className="w-[48%] aspect-[2/3] rounded-xl shadow-lg overflow-hidden active:opacity-70"
                 style={{
                   backgroundColor: notebook.color,
                 }}
               >
-                <View className="flex-1 p-4 justify-between">
+                <View className="flex-1 p-5 justify-between">
                   <View className="flex-row items-center">
-                    <Ionicons name="book-outline" size={26} color="#FFFFFF" />
+                    <Ionicons name="book-outline" size={32} color="#FFFFFF" />
                   </View>
                   <Text
-                    className="text-base font-bold text-white"
+                    className="text-lg font-bold text-white"
                     numberOfLines={2}
                   >
                     {notebook.name}
                   </Text>
-                  <Text className="text-sm text-white opacity-80">
+                  <Text className="text-base text-white opacity-80">
                     {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
                   </Text>
                 </View>
 
                 {/* Ring binder effect */}
-                <View className="absolute left-0 top-0 bottom-0 w-7 flex-col justify-around items-center py-5">
+                <View className="absolute left-0 top-0 bottom-0 w-8 flex-col justify-around items-center py-6">
                   {[...Array(5)].map((_, i) => (
                     <View
                       key={i}
-                      className="w-3.5 h-3.5 rounded-full bg-gray-400 border-2 border-gray-300"
+                      className="w-4 h-4 rounded-full bg-gray-400 border-2 border-gray-300"
                       style={{ shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
                     />
                   ))}
@@ -96,15 +96,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   key={notebook.id}
                   onPress={() => handleNotebookPress(notebook.id)}
                   onLongPress={() => handleEditNotebook(notebook.id)}
-                  className="w-[47%] aspect-[3/4] mb-6 rounded-xl shadow-lg overflow-hidden active:opacity-70"
+                  className="w-[48%] aspect-[2/3] mb-6 rounded-xl shadow-lg overflow-hidden active:opacity-70"
                   style={{
                     backgroundColor: notebook.color,
-                    marginRight: index % 2 === 0 ? "6%" : 0,
+                    marginRight: index % 2 === 0 ? "4%" : 0,
                   }}
                 >
-                  <View className="flex-1 p-4">
+                  <View className="flex-1 p-5">
                     <View className="flex-row items-center mb-3">
-                      <Ionicons name="book-outline" size={24} color="#FFFFFF" />
+                      <Ionicons name="book-outline" size={28} color="#FFFFFF" />
                     </View>
                     <Text
                       className="text-lg font-bold text-white"
@@ -112,8 +112,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     >
                       {notebook.name}
                     </Text>
-                    <View className="absolute bottom-4 left-4 right-4">
-                      <Text className="text-xs text-white opacity-80">
+                    <View className="absolute bottom-5 left-5 right-5">
+                      <Text className="text-sm text-white opacity-80">
                         {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
                       </Text>
                     </View>
