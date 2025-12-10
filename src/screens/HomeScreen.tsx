@@ -27,6 +27,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [editingColorId, setEditingColorId] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState("#E63946");
+  const [originalColor, setOriginalColor] = useState("#E63946");
   const [sliderPosition, setSliderPosition] = useState(0);
   const sliderWidth = 280;
 
@@ -110,7 +111,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const handleColorPress = (notebookId: string, currentColor: string) => {
     setEditingColorId(notebookId);
     setSelectedColor(currentColor);
+    setOriginalColor(currentColor);
     setShowColorPicker(true);
+  };
+
+  const handleResetColor = () => {
+    setSelectedColor(originalColor);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const handleSaveColor = () => {
@@ -425,13 +432,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               </View>
             </View>
 
-            {/* Save Button */}
-            <Pressable
-              onPress={handleSaveColor}
-              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
-            >
-              <Text className="text-white text-lg font-bold">Save Color</Text>
-            </Pressable>
+            {/* Buttons */}
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={handleResetColor}
+                className="flex-1 bg-gray-500 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-white text-lg font-bold">Reset</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSaveColor}
+                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-white text-lg font-bold">Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>

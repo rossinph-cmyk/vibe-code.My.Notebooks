@@ -32,6 +32,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [selectedColor, setSelectedColor] = useState(notebook?.color || "#E63946");
+  const [originalNotebookColor, setOriginalNotebookColor] = useState(notebook?.color || "#E63946");
   const [sliderPosition, setSliderPosition] = useState(0);
   const sliderWidth = 280;
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
@@ -39,6 +40,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [showNoteColorPicker, setShowNoteColorPicker] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedNoteColor, setSelectedNoteColor] = useState("#FFFFFF");
+  const [originalNoteColor, setOriginalNoteColor] = useState("#FFFFFF");
   const [noteSliderPosition, setNoteSliderPosition] = useState(0);
 
   const hslToHex = (h: number, s: number, l: number): string => {
@@ -109,10 +111,29 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     setShowColorPicker(false);
   };
 
+  const handleOpenNotebookColorPicker = () => {
+    const currentColor = notebook?.color || "#E63946";
+    setSelectedColor(currentColor);
+    setOriginalNotebookColor(currentColor);
+    setShowColorPicker(true);
+  };
+
+  const handleResetNotebookColor = () => {
+    setSelectedColor(originalNotebookColor);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
   const handleNoteColorPress = (noteId: string, currentColor?: string) => {
+    const noteColor = currentColor || "#FFFFFF";
     setSelectedNoteId(noteId);
-    setSelectedNoteColor(currentColor || "#FFFFFF");
+    setSelectedNoteColor(noteColor);
+    setOriginalNoteColor(noteColor);
     setShowNoteColorPicker(true);
+  };
+
+  const handleResetNoteColor = () => {
+    setSelectedNoteColor(originalNoteColor);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const handleSaveNoteColor = () => {
@@ -157,7 +178,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
       },
       headerRight: () => (
         <Pressable
-          onPress={() => setShowColorPicker(true)}
+          onPress={handleOpenNotebookColorPicker}
           className="mr-4 active:opacity-70"
         >
           <Ionicons name="color-palette-outline" size={24} color="#FFFFFF" />
@@ -484,13 +505,21 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               </View>
             </View>
 
-            {/* Save Button */}
-            <Pressable
-              onPress={handleSaveColor}
-              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
-            >
-              <Text className="text-white text-lg font-bold">Save Color</Text>
-            </Pressable>
+            {/* Buttons */}
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={handleResetNotebookColor}
+                className="flex-1 bg-gray-500 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-white text-lg font-bold">Reset</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSaveColor}
+                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-white text-lg font-bold">Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -573,13 +602,21 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               </View>
             </View>
 
-            {/* Save Button */}
-            <Pressable
-              onPress={handleSaveNoteColor}
-              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
-            >
-              <Text className="text-white text-lg font-bold">Save Color</Text>
-            </Pressable>
+            {/* Buttons */}
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={handleResetNoteColor}
+                className="flex-1 bg-gray-500 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-white text-lg font-bold">Reset</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSaveNoteColor}
+                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-white text-lg font-bold">Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
