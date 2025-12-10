@@ -1,6 +1,7 @@
 export interface Note {
   id: string;
   text: string;
+  backgroundColor?: string;
   createdAt: number;
   updatedAt: number;
 }
