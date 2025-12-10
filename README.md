@@ -1,0 +1,80 @@
+# Voice Notepad App
+
+A beautiful, minimal notepad app with voice-to-text functionality. Create notebooks with customizable colors and record notes using your voice.
+
+## Features
+
+- **Create Notebooks**: Organize your notes in colorful notebooks with custom names
+- **Voice Recording**: Tap to record, tap to stop - voice is automatically transcribed to text
+- **Customizable Design**: Choose from 64 crayon colors for notebook covers, text, and backgrounds
+- **Lined Paper Effect**: Notes display on realistic lined paper for a familiar writing experience
+- **Share Notes**: Easily share your notes via messaging apps or email
+- **No Backend Required**: All data stored locally on your device
+- **Ring Binder Design**: Beautiful notebook covers with ring binder effect
+
+## How to Use
+
+### Creating a Notebook
+
+1. On the home screen, tap the **+ New Notebook** button
+2. Enter a name for your notebook
+3. Select a cover color from 64 options
+4. Choose your text color
+5. Pick a background color (white, cream, yellow, or any of the 64 colors with transparency)
+6. Tap **Create Notebook**
+
+### Recording Notes
+
+1. Tap on a notebook to open it
+2. Tap the microphone button at the bottom
+3. Speak your note
+4. Tap the stop button when finished
+5. Wait a moment while the app transcribes your voice to text
+6. Your note appears automatically with lined paper styling
+
+### Managing Notes
+
+- **Share**: Tap the share icon on any note to send it via messaging apps or email
+- **Delete**: Tap the trash icon to delete a note
+- **Edit Notebook**: Long-press a notebook on the home screen to edit its colors or name
+
+### Editing Notebooks
+
+1. Long-press any notebook on the home screen
+2. Update the name, colors, or background
+3. Tap **Save Changes**
+4. Or tap **Delete Notebook** to remove it entirely
+
+## Technical Details
+
+- Built with Expo SDK 53 and React Native 0.76.7
+- Uses OpenAI's gpt-4o-transcribe for voice-to-text
+- State management with Zustand + AsyncStorage for persistence
+- Native iOS design following Apple Human Interface Guidelines
+- Haptic feedback for enhanced user experience
+
+## App Structure
+
+```
+src/
+├── screens/
+│   ├── HomeScreen.tsx          # Notebook grid landing page
+│   └── NotebookScreen.tsx      # Individual notebook with voice recording
+├── components/
+│   └── NotebookModal.tsx       # Create/edit notebook modal
+├── state/
+│   └── notebookStore.ts        # Zustand store for notebooks and notes
+├── types/
+│   └── notebook.ts             # TypeScript types and color definitions
+└── api/
+    └── transcribe-audio.ts     # Voice transcription service
+```
+
+## Color Palette
+
+The app includes 64 standard crayon colors matching a classic Crayola box, including:
+- Primary colors (Red, Blue, Yellow, Green)
+- Secondary colors (Orange, Violet, Brown)
+- Special colors (Periwinkle, Cerulean, Magenta, etc.)
+
+Background options include White, Cream, and Yellow, plus any of the 64 colors with transparency.
