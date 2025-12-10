@@ -596,22 +596,45 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               Select Note Background Color
             </Text>
 
-            {/* Original Color Option */}
-            <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-700 mb-2">Original Color</Text>
-              <Pressable
-                onPress={() => {
-                  setSelectedNoteColor(originalNoteColor);
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                }}
-                className="h-16 rounded-2xl p-4 border-2"
-                style={{
-                  backgroundColor: originalNoteColor,
-                  borderColor: selectedNoteColor === originalNoteColor ? "#3B82F6" : "#E5E7EB"
-                }}
-              >
-                <Text className="text-gray-800 text-sm">Sample note text</Text>
-              </Pressable>
+            {/* Default and Original Color Options */}
+            <View className="mb-4 flex-row gap-3">
+              {/* Default Notebook Background */}
+              <View className="flex-1">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">Default</Text>
+                <Pressable
+                  onPress={() => {
+                    setSelectedNoteColor(notebook?.backgroundColor || "#FFFFFF");
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  className="h-16 rounded-2xl p-3 border-2"
+                  style={{
+                    backgroundColor: notebook?.backgroundColor || "#FFFFFF",
+                    borderColor: selectedNoteColor === (notebook?.backgroundColor || "#FFFFFF") ? "#3B82F6" : "#E5E7EB"
+                  }}
+                >
+                  <Text className="text-gray-800 text-xs">Notebook color</Text>
+                </Pressable>
+              </View>
+
+              {/* Original Note Color (if different from default) */}
+              {originalNoteColor !== (notebook?.backgroundColor || "#FFFFFF") && (
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-gray-700 mb-2">Current</Text>
+                  <Pressable
+                    onPress={() => {
+                      setSelectedNoteColor(originalNoteColor);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                    className="h-16 rounded-2xl p-3 border-2"
+                    style={{
+                      backgroundColor: originalNoteColor,
+                      borderColor: selectedNoteColor === originalNoteColor ? "#3B82F6" : "#E5E7EB"
+                    }}
+                  >
+                    <Text className="text-gray-800 text-xs">Current color</Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
 
             {/* Rainbow Gradient Slider */}
