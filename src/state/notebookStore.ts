@@ -21,7 +21,7 @@ export const useNotebookStore = create<NotebookState>()(
       notebooks: [
         {
           id: "default-1",
-          name: "Notebook 1",
+          name: "Tap to rename",
           color: "#E63946",
           backgroundColor: "#FFFFFF",
           textColor: "#000000",
@@ -30,7 +30,7 @@ export const useNotebookStore = create<NotebookState>()(
         },
         {
           id: "default-2",
-          name: "Notebook 2",
+          name: "Tap to rename",
           color: "#457B9D",
           backgroundColor: "#FFFFFF",
           textColor: "#000000",
