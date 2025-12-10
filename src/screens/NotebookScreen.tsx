@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal, PanResponder } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
@@ -10,8 +10,6 @@ import { Audio } from "expo-av";
 import { transcribeAudio } from "../api/transcribe-audio";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 
 type NotebookScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Notebook">;
 type NotebookScreenRouteProp = RouteProp<RootStackParamList, "Notebook">;
@@ -33,19 +31,8 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [selectedColor, setSelectedColor] = useState(notebook?.color || "#E63946");
-
-  const sliderPosition = useSharedValue(0);
-
-  // Rainbow colors for the gradient
-  const rainbowColors = [
-    "#FF0000", // Red
-    "#FF7F00", // Orange
-    "#FFFF00", // Yellow
-    "#00FF00", // Green
-    "#0000FF", // Blue
-    "#4B0082", // Indigo
-    "#9400D3", // Violet
-  ];
+  const [sliderPosition, setSliderPosition] = useState(0);
+  const sliderWidth = 280;
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -63,20 +50,27 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     return hslToHex(hue, 100, 50);
   };
 
-  const pan = Gesture.Pan()
-    .onUpdate((event) => {
-      const newPosition = Math.max(0, Math.min(1, event.x / 300));
-      sliderPosition.value = newPosition;
-      const color = getColorFromPosition(newPosition);
-      setSelectedColor(color);
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setSliderPosition(newPosition);
+        setSelectedColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderMove: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setSliderPosition(newPosition);
+        setSelectedColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderRelease: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      },
     })
-    .onEnd(() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: sliderPosition.value * 300 - 15 }],
-  }));
+  ).current;
 
   const handleSaveColor = () => {
     if (notebook) {
@@ -338,37 +332,34 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             </Text>
 
             {/* Rainbow Gradient Slider */}
-            <View className="mb-6">
-              <View className="h-16 rounded-2xl overflow-hidden mb-4" style={{ width: 300 }}>
+            <View className="mb-6 items-center">
+              <View
+                {...panResponder.panHandlers}
+                style={{ width: sliderWidth, height: 60, borderRadius: 16, overflow: "hidden", marginBottom: 16 }}
+              >
                 <LinearGradient
                   colors={["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={{ flex: 1 }}
                 />
+                {/* Slider indicator */}
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: sliderPosition * sliderWidth - 3,
+                    width: 6,
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                  }}
+                />
               </View>
-              <GestureDetector gesture={pan}>
-                <View style={{ width: 300, height: 30 }}>
-                  <Animated.View
-                    style={[
-                      animatedStyle,
-                      {
-                        width: 30,
-                        height: 30,
-                        borderRadius: 15,
-                        backgroundColor: selectedColor,
-                        borderWidth: 3,
-                        borderColor: "#FFFFFF",
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 4,
-                        elevation: 5,
-                      },
-                    ]}
-                  />
-                </View>
-              </GestureDetector>
             </View>
 
             {/* Color Preview */}
