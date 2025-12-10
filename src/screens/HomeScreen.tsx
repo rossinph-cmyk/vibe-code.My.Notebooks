@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, Modal } from "react-native";
+import { View, Text, Pressable, ScrollView, Modal, TextInput, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
@@ -15,8 +15,11 @@ interface HomeScreenProps {
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const notebooks = useNotebookStore((s) => s.notebooks);
+  const updateNotebook = useNotebookStore((s) => s.updateNotebook);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingNotebook, setEditingNotebook] = useState<string | null>(null);
+  const [editingNameId, setEditingNameId] = useState<string | null>(null);
+  const [editingNameValue, setEditingNameValue] = useState("");
 
   const handleNotebookPress = (notebookId: string) => {
     navigation.navigate("Notebook", { notebookId });
@@ -35,6 +38,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const handleCloseModal = () => {
     setModalVisible(false);
     setEditingNotebook(null);
+  };
+
+  const handleNamePress = (notebookId: string, currentName: string) => {
+    setEditingNameId(notebookId);
+    setEditingNameValue(currentName);
+  };
+
+  const handleNameSave = () => {
+    if (editingNameId && editingNameValue.trim()) {
+      updateNotebook(editingNameId, { name: editingNameValue.trim() });
+    }
+    setEditingNameId(null);
+    setEditingNameValue("");
+    Keyboard.dismiss();
+  };
+
+  const handleNameCancel = () => {
+    setEditingNameId(null);
+    setEditingNameValue("");
+    Keyboard.dismiss();
   };
 
   return (
@@ -63,12 +86,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   <View className="flex-row items-center">
                     <Ionicons name="book-outline" size={36} color="#FFFFFF" />
                   </View>
-                  <Text
-                    className="text-xl font-bold text-white"
-                    numberOfLines={2}
+                  <Pressable
+                    onPress={() => handleNamePress(notebook.id, notebook.name)}
+                    className="active:opacity-70"
                   >
-                    {notebook.name}
-                  </Text>
+                    <Text
+                      className="text-xl font-bold text-white"
+                      numberOfLines={2}
+                    >
+                      {notebook.name}
+                    </Text>
+                  </Pressable>
                   <Text className="text-lg text-white opacity-80">
                     {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
                   </Text>
@@ -106,12 +134,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     <View className="flex-row items-center mb-4">
                       <Ionicons name="book-outline" size={32} color="#FFFFFF" />
                     </View>
-                    <Text
-                      className="text-xl font-bold text-white"
-                      numberOfLines={3}
+                    <Pressable
+                      onPress={() => handleNamePress(notebook.id, notebook.name)}
+                      className="active:opacity-70"
                     >
-                      {notebook.name}
-                    </Text>
+                      <Text
+                        className="text-xl font-bold text-white"
+                        numberOfLines={3}
+                      >
+                        {notebook.name}
+                      </Text>
+                    </Pressable>
                     <View className="absolute bottom-6 left-6 right-6">
                       <Text className="text-base text-white opacity-80">
                         {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
@@ -166,6 +199,51 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         onClose={handleCloseModal}
         notebookId={editingNotebook}
       />
+
+      {/* Name editing modal */}
+      <Modal
+        visible={editingNameId !== null}
+        animationType="fade"
+        transparent
+        onRequestClose={handleNameCancel}
+      >
+        <Pressable
+          className="flex-1 bg-black/50 justify-center items-center px-8"
+          onPress={handleNameCancel}
+        >
+          <Pressable
+            className="w-full bg-white rounded-2xl p-6"
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text className="text-xl font-bold text-gray-900 mb-4">Edit Notebook Name</Text>
+            <TextInput
+              value={editingNameValue}
+              onChangeText={setEditingNameValue}
+              placeholder="Enter notebook name"
+              className="bg-gray-100 rounded-xl px-4 py-4 text-base text-gray-900 mb-4"
+              placeholderTextColor="#9CA3AF"
+              autoFocus
+              onSubmitEditing={handleNameSave}
+            />
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={handleNameCancel}
+                className="flex-1 bg-gray-200 rounded-xl py-3 items-center active:opacity-70"
+              >
+                <Text className="text-gray-900 text-base font-semibold">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleNameSave}
+                disabled={!editingNameValue.trim()}
+                className="flex-1 bg-blue-600 rounded-xl py-3 items-center active:opacity-70"
+                style={{ opacity: !editingNameValue.trim() ? 0.5 : 1 }}
+              >
+                <Text className="text-white text-base font-semibold">Save</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 };
