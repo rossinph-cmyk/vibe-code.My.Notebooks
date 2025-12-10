@@ -48,38 +48,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           {/* Two notebooks displayed horizontally */}
-          <View className="flex-row justify-center mb-8 px-2">
+          <View className="flex-row justify-between mb-8">
             {notebooks.map((notebook) => (
               <Pressable
                 key={notebook.id}
                 onPress={() => handleNotebookPress(notebook.id)}
                 onLongPress={() => handleEditNotebook(notebook.id)}
-                className="w-32 h-44 mx-3 rounded-xl shadow-lg overflow-hidden active:opacity-70"
+                className="w-[47%] aspect-[3/4] rounded-xl shadow-lg overflow-hidden active:opacity-70"
                 style={{
                   backgroundColor: notebook.color,
                 }}
               >
-                <View className="flex-1 p-3 justify-between">
+                <View className="flex-1 p-4 justify-between">
                   <View className="flex-row items-center">
-                    <Ionicons name="book-outline" size={22} color="#FFFFFF" />
+                    <Ionicons name="book-outline" size={26} color="#FFFFFF" />
                   </View>
                   <Text
-                    className="text-sm font-bold text-white"
+                    className="text-base font-bold text-white"
                     numberOfLines={2}
                   >
                     {notebook.name}
                   </Text>
-                  <Text className="text-xs text-white opacity-80">
+                  <Text className="text-sm text-white opacity-80">
                     {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
                   </Text>
                 </View>
 
                 {/* Ring binder effect */}
-                <View className="absolute left-0 top-0 bottom-0 w-6 flex-col justify-around items-center py-4">
+                <View className="absolute left-0 top-0 bottom-0 w-7 flex-col justify-around items-center py-5">
                   {[...Array(5)].map((_, i) => (
                     <View
                       key={i}
-                      className="w-3 h-3 rounded-full bg-gray-400 border-2 border-gray-300"
+                      className="w-3.5 h-3.5 rounded-full bg-gray-400 border-2 border-gray-300"
                       style={{ shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
                     />
                   ))}
@@ -96,10 +96,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   key={notebook.id}
                   onPress={() => handleNotebookPress(notebook.id)}
                   onLongPress={() => handleEditNotebook(notebook.id)}
-                  className="w-[45%] aspect-[3/4] mr-[3%] mb-6 rounded-2xl shadow-lg overflow-hidden active:opacity-70"
+                  className="w-[47%] aspect-[3/4] mb-6 rounded-xl shadow-lg overflow-hidden active:opacity-70"
                   style={{
                     backgroundColor: notebook.color,
-                    marginRight: index % 2 === 0 ? "3%" : 0,
+                    marginRight: index % 2 === 0 ? "6%" : 0,
                   }}
                 >
                   <View className="flex-1 p-4">
