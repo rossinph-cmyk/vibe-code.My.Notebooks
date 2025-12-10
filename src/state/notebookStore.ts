@@ -18,7 +18,26 @@ interface NotebookState {
 export const useNotebookStore = create<NotebookState>()(
   persist(
     (set, get) => ({
-      notebooks: [],
+      notebooks: [
+        {
+          id: "default-1",
+          name: "Notebook 1",
+          color: "#E63946",
+          backgroundColor: "#FFFFFF",
+          textColor: "#000000",
+          notes: [],
+          createdAt: Date.now(),
+        },
+        {
+          id: "default-2",
+          name: "Notebook 2",
+          color: "#457B9D",
+          backgroundColor: "#FFFFFF",
+          textColor: "#000000",
+          notes: [],
+          createdAt: Date.now(),
+        },
+      ],
 
       addNotebook: (notebook) =>
         set((state) => ({

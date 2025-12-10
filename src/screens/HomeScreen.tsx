@@ -47,58 +47,101 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
         >
-          <View className="flex-row flex-wrap">
-            {notebooks.map((notebook, index) => (
+          {/* Two notebooks displayed horizontally */}
+          <View className="flex-row justify-center mb-8 px-2">
+            {notebooks.map((notebook) => (
               <Pressable
                 key={notebook.id}
                 onPress={() => handleNotebookPress(notebook.id)}
                 onLongPress={() => handleEditNotebook(notebook.id)}
-                className="w-[45%] aspect-[3/4] mr-[3%] mb-6 rounded-2xl shadow-lg overflow-hidden active:opacity-70"
+                className="w-32 h-44 mx-3 rounded-xl shadow-lg overflow-hidden active:opacity-70"
                 style={{
                   backgroundColor: notebook.color,
-                  marginRight: index % 2 === 0 ? "3%" : 0,
                 }}
               >
-                <View className="flex-1 p-4">
-                  <View className="flex-row items-center mb-3">
-                    <Ionicons name="book-outline" size={24} color="#FFFFFF" />
+                <View className="flex-1 p-3 justify-between">
+                  <View className="flex-row items-center">
+                    <Ionicons name="book-outline" size={22} color="#FFFFFF" />
                   </View>
                   <Text
-                    className="text-lg font-bold text-white"
-                    numberOfLines={3}
+                    className="text-sm font-bold text-white"
+                    numberOfLines={2}
                   >
                     {notebook.name}
                   </Text>
-                  <View className="absolute bottom-4 left-4 right-4">
-                    <Text className="text-xs text-white opacity-80">
-                      {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
-                    </Text>
-                  </View>
+                  <Text className="text-xs text-white opacity-80">
+                    {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
+                  </Text>
                 </View>
 
                 {/* Ring binder effect */}
-                <View className="absolute left-0 top-0 bottom-0 w-8 flex-col justify-around items-center py-6">
+                <View className="absolute left-0 top-0 bottom-0 w-6 flex-col justify-around items-center py-4">
                   {[...Array(5)].map((_, i) => (
                     <View
                       key={i}
-                      className="w-4 h-4 rounded-full bg-gray-400 border-2 border-gray-300"
+                      className="w-3 h-3 rounded-full bg-gray-400 border-2 border-gray-300"
                       style={{ shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
                     />
                   ))}
                 </View>
               </Pressable>
             ))}
+          </View>
 
-            {/* Add new notebook button */}
+          {/* Additional notebooks in grid layout */}
+          {notebooks.length > 2 && (
+            <View className="flex-row flex-wrap">
+              {notebooks.slice(2).map((notebook, index) => (
+                <Pressable
+                  key={notebook.id}
+                  onPress={() => handleNotebookPress(notebook.id)}
+                  onLongPress={() => handleEditNotebook(notebook.id)}
+                  className="w-[45%] aspect-[3/4] mr-[3%] mb-6 rounded-2xl shadow-lg overflow-hidden active:opacity-70"
+                  style={{
+                    backgroundColor: notebook.color,
+                    marginRight: index % 2 === 0 ? "3%" : 0,
+                  }}
+                >
+                  <View className="flex-1 p-4">
+                    <View className="flex-row items-center mb-3">
+                      <Ionicons name="book-outline" size={24} color="#FFFFFF" />
+                    </View>
+                    <Text
+                      className="text-lg font-bold text-white"
+                      numberOfLines={3}
+                    >
+                      {notebook.name}
+                    </Text>
+                    <View className="absolute bottom-4 left-4 right-4">
+                      <Text className="text-xs text-white opacity-80">
+                        {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Ring binder effect */}
+                  <View className="absolute left-0 top-0 bottom-0 w-8 flex-col justify-around items-center py-6">
+                    {[...Array(5)].map((_, i) => (
+                      <View
+                        key={i}
+                        className="w-4 h-4 rounded-full bg-gray-400 border-2 border-gray-300"
+                        style={{ shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
+                      />
+                    ))}
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          )}
+
+          {/* Add new notebook button */}
+          <View className="items-center mt-4">
             <Pressable
               onPress={handleAddNotebook}
-              className="w-[45%] aspect-[3/4] rounded-2xl border-4 border-dashed border-amber-300 bg-amber-100 items-center justify-center active:opacity-70"
-              style={{
-                marginRight: notebooks.length % 2 === 0 ? "3%" : 0,
-              }}
+              className="w-48 h-14 rounded-xl border-3 border-dashed border-amber-300 bg-amber-100 items-center justify-center flex-row active:opacity-70"
             >
-              <Ionicons name="add" size={64} color="#D97706" />
-              <Text className="text-lg font-semibold text-amber-900 mt-2">New Notebook</Text>
+              <Ionicons name="add" size={28} color="#D97706" />
+              <Text className="text-base font-semibold text-amber-900 ml-2">Add Notebook</Text>
             </Pressable>
           </View>
         </ScrollView>
