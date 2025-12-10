@@ -47,6 +47,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     return hslToHex(hue, 100, 50);
   };
 
+  const getPositionFromColor = (hexColor: string): number => {
+    // Convert hex to RGB
+    const hex = hexColor.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    // Convert RGB to HSL to get hue
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+
+    if (max !== min) {
+      const d = max - min;
+      switch (max) {
+        case r:
+          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+          break;
+        case g:
+          h = ((b - r) / d + 2) / 6;
+          break;
+        case b:
+          h = ((r - g) / d + 4) / 6;
+          break;
+      }
+    }
+
+    return h; // Return normalized position (0-1)
+  };
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -112,11 +142,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setEditingColorId(notebookId);
     setSelectedColor(currentColor);
     setOriginalColor(currentColor);
+    const position = getPositionFromColor(currentColor);
+    setSliderPosition(position);
     setShowColorPicker(true);
   };
 
   const handleResetColor = () => {
     setSelectedColor(originalColor);
+    const position = getPositionFromColor(originalColor);
+    setSliderPosition(position);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 

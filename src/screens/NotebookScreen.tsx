@@ -59,6 +59,36 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     return hslToHex(hue, 100, 50);
   };
 
+  const getPositionFromColor = (hexColor: string): number => {
+    // Convert hex to RGB
+    const hex = hexColor.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    // Convert RGB to HSL to get hue
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+
+    if (max !== min) {
+      const d = max - min;
+      switch (max) {
+        case r:
+          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+          break;
+        case g:
+          h = ((b - r) / d + 2) / 6;
+          break;
+        case b:
+          h = ((r - g) / d + 4) / 6;
+          break;
+      }
+    }
+
+    return h; // Return normalized position (0-1)
+  };
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -115,11 +145,15 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     const currentColor = notebook?.color || "#E63946";
     setSelectedColor(currentColor);
     setOriginalNotebookColor(currentColor);
+    const position = getPositionFromColor(currentColor);
+    setSliderPosition(position);
     setShowColorPicker(true);
   };
 
   const handleResetNotebookColor = () => {
     setSelectedColor(originalNotebookColor);
+    const position = getPositionFromColor(originalNotebookColor);
+    setSliderPosition(position);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
@@ -128,11 +162,16 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     setSelectedNoteId(noteId);
     setSelectedNoteColor(noteColor);
     setOriginalNoteColor(noteColor);
+    const position = getPositionFromColor(noteColor);
+    setNoteSliderPosition(position);
     setShowNoteColorPicker(true);
   };
 
   const handleResetNoteColor = () => {
     setSelectedNoteColor(originalNoteColor);
+    // Reset the slider position to match the original color
+    const position = getPositionFromColor(originalNoteColor);
+    setNoteSliderPosition(position);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
