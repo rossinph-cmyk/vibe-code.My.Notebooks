@@ -6,6 +6,7 @@ import { Notebook, Note } from "../types/notebook";
 
 interface NotebookState {
   notebooks: Notebook[];
+  darkMode: boolean;
   addNotebook: (notebook: Omit<Notebook, "id" | "createdAt" | "notes">) => void;
   updateNotebook: (id: string, updates: Partial<Notebook>) => void;
   deleteNotebook: (id: string) => void;
@@ -13,6 +14,7 @@ interface NotebookState {
   updateNote: (notebookId: string, noteId: string, text: string) => void;
   deleteNote: (notebookId: string, noteId: string) => void;
   getNotebook: (id: string) => Notebook | undefined;
+  toggleDarkMode: () => void;
 }
 
 export const useNotebookStore = create<NotebookState>()(
@@ -38,6 +40,7 @@ export const useNotebookStore = create<NotebookState>()(
           createdAt: Date.now(),
         },
       ],
+      darkMode: false,
 
       addNotebook: (notebook) =>
         set((state) => ({
@@ -62,6 +65,11 @@ export const useNotebookStore = create<NotebookState>()(
       deleteNotebook: (id) =>
         set((state) => ({
           notebooks: state.notebooks.filter((nb) => nb.id !== id),
+        })),
+
+      toggleDarkMode: () =>
+        set((state) => ({
+          darkMode: !state.darkMode,
         })),
 
       addNote: (notebookId, noteText) =>

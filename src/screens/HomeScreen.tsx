@@ -15,6 +15,8 @@ interface HomeScreenProps {
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const notebooks = useNotebookStore((s) => s.notebooks);
+  const darkMode = useNotebookStore((s) => s.darkMode);
+  const toggleDarkMode = useNotebookStore((s) => s.toggleDarkMode);
   const updateNotebook = useNotebookStore((s) => s.updateNotebook);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingNotebook, setEditingNotebook] = useState<string | null>(null);
@@ -61,10 +63,40 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-amber-50" edges={["top", "bottom"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top", "bottom"]}
+      style={{ backgroundColor: darkMode ? "#000000" : "#FEF3C7" }}
+    >
       <View className="flex-1 px-6 pt-8">
-        <Text className="text-4xl font-bold text-amber-900 mb-2">My Notebooks</Text>
-        <Text className="text-base text-amber-700 mb-8">Tap to open or create a new notebook</Text>
+        {/* Header with title and dark mode toggle */}
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-1">
+            <Text
+              className="text-4xl font-bold"
+              style={{ color: darkMode ? "#A855F7" : "#78350F" }}
+            >
+              My Notebooks
+            </Text>
+          </View>
+          <Pressable
+            onPress={toggleDarkMode}
+            className="p-2 rounded-full active:opacity-70"
+            style={{ backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
+          >
+            <Ionicons
+              name={darkMode ? "sunny" : "moon"}
+              size={28}
+              color={darkMode ? "#A855F7" : "#78350F"}
+            />
+          </Pressable>
+        </View>
+        <Text
+          className="text-base mb-8"
+          style={{ color: darkMode ? "#A855F7" : "#92400E" }}
+        >
+          Tap to open or create a new notebook
+        </Text>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
