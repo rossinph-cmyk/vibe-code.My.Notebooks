@@ -33,6 +33,9 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [selectedColor, setSelectedColor] = useState(notebook?.color || "#E63946");
   const [sliderPosition, setSliderPosition] = useState(0);
   const sliderWidth = 280;
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteText, setEditingNoteText] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -78,6 +81,29 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     setShowColorPicker(false);
+  };
+
+  const handleEditNote = (noteId: string, noteText: string) => {
+    setEditingNoteId(noteId);
+    setEditingNoteText(noteText);
+    setShowEditModal(true);
+  };
+
+  const handleSaveNote = () => {
+    if (editingNoteId && editingNoteText.trim() && notebook) {
+      const updateNote = useNotebookStore.getState().updateNote;
+      updateNote(notebookId, editingNoteId, editingNoteText.trim());
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setShowEditModal(false);
+    setEditingNoteId(null);
+    setEditingNoteText("");
+  };
+
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+    setEditingNoteId(null);
+    setEditingNoteText("");
   };
 
   React.useLayoutEffect(() => {
@@ -235,9 +261,10 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
           )}
 
           {notebook.notes.map((note) => (
-            <View
+            <Pressable
               key={note.id}
-              className="rounded-2xl p-6 mb-4 relative overflow-hidden"
+              onPress={() => handleEditNote(note.id, note.text)}
+              className="rounded-2xl p-6 mb-4 relative overflow-hidden active:opacity-90"
               style={{ backgroundColor: backgroundColorWithOpacity }}
             >
               {/* Lined paper effect */}
@@ -279,7 +306,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                   </Pressable>
                 </View>
               </View>
-            </View>
+            </Pressable>
           ))}
         </ScrollView>
 
@@ -380,6 +407,62 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             >
               <Text className="text-white text-lg font-bold">Save Color</Text>
             </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Edit Note Modal */}
+      <Modal
+        visible={showEditModal}
+        animationType="slide"
+        transparent
+        onRequestClose={handleCancelEdit}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-2xl font-bold text-gray-900">Edit Note</Text>
+              <Pressable
+                onPress={handleCancelEdit}
+                className="active:opacity-70"
+              >
+                <Ionicons name="close" size={28} color="#374151" />
+              </Pressable>
+            </View>
+
+            <Text className="text-base font-semibold text-gray-700 mb-4">
+              Make corrections to your note
+            </Text>
+
+            <TextInput
+              value={editingNoteText}
+              onChangeText={setEditingNoteText}
+              placeholder="Enter note text"
+              multiline
+              numberOfLines={8}
+              textAlignVertical="top"
+              className="bg-gray-100 rounded-xl px-4 py-4 text-base text-gray-900 mb-6"
+              placeholderTextColor="#9CA3AF"
+              autoFocus
+              style={{ minHeight: 150 }}
+            />
+
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={handleCancelEdit}
+                className="flex-1 bg-gray-200 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-gray-900 text-base font-semibold">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSaveNote}
+                disabled={!editingNoteText.trim()}
+                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+                style={{ opacity: !editingNoteText.trim() ? 0.5 : 1 }}
+              >
+                <Text className="text-white text-base font-semibold">Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
