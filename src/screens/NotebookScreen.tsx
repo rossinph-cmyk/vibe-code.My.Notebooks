@@ -102,6 +102,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     setEditingNoteText("");
   };
 
+  // Layout effect for header options
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: notebook?.name || "Notebook",
