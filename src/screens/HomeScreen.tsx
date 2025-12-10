@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, Modal, TextInput, Keyboard } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, Text, Pressable, ScrollView, Modal, TextInput, Keyboard, PanResponder } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import { useNotebookStore } from "../state/notebookStore";
 import { Ionicons } from "@expo/vector-icons";
 import { NotebookModal } from "../components/NotebookModal";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -22,6 +24,49 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [editingNotebook, setEditingNotebook] = useState<string | null>(null);
   const [editingNameId, setEditingNameId] = useState<string | null>(null);
   const [editingNameValue, setEditingNameValue] = useState("");
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [editingColorId, setEditingColorId] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState("#E63946");
+  const [sliderPosition, setSliderPosition] = useState(0);
+  const sliderWidth = 280;
+
+  const hslToHex = (h: number, s: number, l: number): string => {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, "0");
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+
+  const getColorFromPosition = (position: number): string => {
+    const hue = position * 360;
+    return hslToHex(hue, 100, 50);
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setSliderPosition(newPosition);
+        setSelectedColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderMove: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setSliderPosition(newPosition);
+        setSelectedColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderRelease: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      },
+    })
+  ).current;
 
   const handleNotebookPress = (notebookId: string) => {
     navigation.navigate("Notebook", { notebookId });
@@ -60,6 +105,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setEditingNameId(null);
     setEditingNameValue("");
     Keyboard.dismiss();
+  };
+
+  const handleColorPress = (notebookId: string, currentColor: string) => {
+    setEditingColorId(notebookId);
+    setSelectedColor(currentColor);
+    setShowColorPicker(true);
+  };
+
+  const handleSaveColor = () => {
+    if (editingColorId && selectedColor) {
+      updateNotebook(editingColorId, { color: selectedColor });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setShowColorPicker(false);
+    setEditingColorId(null);
+  };
+
+  const handleCloseColorPicker = () => {
+    setShowColorPicker(false);
+    setEditingColorId(null);
   };
 
   return (
@@ -115,8 +180,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 }}
               >
                 <View className="flex-1 p-6 justify-between">
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center justify-between">
                     <Ionicons name="book-outline" size={36} color="#FFFFFF" />
+                    <Pressable
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        handleColorPress(notebook.id, notebook.color);
+                      }}
+                      className="bg-white/20 p-2 rounded-full active:opacity-70"
+                    >
+                      <Ionicons name="color-palette-outline" size={20} color="#FFFFFF" />
+                    </Pressable>
                   </View>
                   <Pressable
                     onPress={() => handleNamePress(notebook.id, notebook.name)}
@@ -163,8 +237,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   }}
                 >
                   <View className="flex-1 p-6">
-                    <View className="flex-row items-center mb-4">
+                    <View className="flex-row items-center justify-between mb-4">
                       <Ionicons name="book-outline" size={32} color="#FFFFFF" />
+                      <Pressable
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleColorPress(notebook.id, notebook.color);
+                        }}
+                        className="bg-white/20 p-2 rounded-full active:opacity-70"
+                      >
+                        <Ionicons name="color-palette-outline" size={18} color="#FFFFFF" />
+                      </Pressable>
                     </View>
                     <Pressable
                       onPress={() => handleNamePress(notebook.id, notebook.name)}
@@ -275,6 +358,82 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </View>
           </Pressable>
         </Pressable>
+      </Modal>
+
+      {/* Color Picker Modal */}
+      <Modal
+        visible={showColorPicker}
+        animationType="slide"
+        transparent
+        onRequestClose={handleCloseColorPicker}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-2xl font-bold text-gray-900">Color Change</Text>
+              <Pressable
+                onPress={handleCloseColorPicker}
+                className="active:opacity-70"
+              >
+                <Ionicons name="close" size={28} color="#374151" />
+              </Pressable>
+            </View>
+
+            <Text className="text-base font-semibold text-gray-700 mb-4">
+              Select Notebook Color
+            </Text>
+
+            {/* Rainbow Gradient Slider */}
+            <View className="mb-6 items-center">
+              <View
+                {...panResponder.panHandlers}
+                style={{ width: sliderWidth, height: 60, borderRadius: 16, overflow: "hidden", marginBottom: 16 }}
+              >
+                <LinearGradient
+                  colors={["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ flex: 1 }}
+                />
+                {/* Slider indicator */}
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: sliderPosition * sliderWidth - 3,
+                    width: 6,
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                  }}
+                />
+              </View>
+            </View>
+
+            {/* Color Preview */}
+            <View className="mb-6">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Preview</Text>
+              <View
+                className="h-24 rounded-2xl items-center justify-center"
+                style={{ backgroundColor: selectedColor }}
+              >
+                <Ionicons name="book-outline" size={48} color="#FFFFFF" />
+              </View>
+            </View>
+
+            {/* Save Button */}
+            <Pressable
+              onPress={handleSaveColor}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+            >
+              <Text className="text-white text-lg font-bold">Save Color</Text>
+            </Pressable>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
