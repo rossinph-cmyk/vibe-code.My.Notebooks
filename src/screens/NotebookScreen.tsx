@@ -502,6 +502,24 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               Select Notebook Color
             </Text>
 
+            {/* Original Color Option */}
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Original Color</Text>
+              <Pressable
+                onPress={() => {
+                  setSelectedColor(originalNotebookColor);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                className="h-16 rounded-2xl items-center justify-center border-2"
+                style={{
+                  backgroundColor: originalNotebookColor,
+                  borderColor: selectedColor === originalNotebookColor ? "#3B82F6" : "#E5E7EB"
+                }}
+              >
+                <Ionicons name="book-outline" size={32} color="#FFFFFF" />
+              </Pressable>
+            </View>
+
             {/* Rainbow Gradient Slider */}
             <View className="mb-6 items-center">
               <View
@@ -544,21 +562,13 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               </View>
             </View>
 
-            {/* Buttons */}
-            <View className="flex-row gap-3">
-              <Pressable
-                onPress={handleResetNotebookColor}
-                className="flex-1 bg-gray-500 rounded-xl py-4 items-center active:opacity-70"
-              >
-                <Text className="text-white text-lg font-bold">Reset</Text>
-              </Pressable>
-              <Pressable
-                onPress={handleSaveColor}
-                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
-              >
-                <Text className="text-white text-lg font-bold">Save</Text>
-              </Pressable>
-            </View>
+            {/* Save Button */}
+            <Pressable
+              onPress={handleSaveColor}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+            >
+              <Text className="text-white text-lg font-bold">Save Color</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -585,6 +595,24 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             <Text className="text-base font-semibold text-gray-700 mb-4">
               Select Note Background Color
             </Text>
+
+            {/* Original Color Option */}
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Original Color</Text>
+              <Pressable
+                onPress={() => {
+                  setSelectedNoteColor(originalNoteColor);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                className="h-16 rounded-2xl p-4 border-2"
+                style={{
+                  backgroundColor: originalNoteColor,
+                  borderColor: selectedNoteColor === originalNoteColor ? "#3B82F6" : "#E5E7EB"
+                }}
+              >
+                <Text className="text-gray-800 text-sm">Sample note text</Text>
+              </Pressable>
+            </View>
 
             {/* Rainbow Gradient Slider */}
             <View className="mb-6 items-center">
@@ -641,21 +669,13 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               </View>
             </View>
 
-            {/* Buttons */}
-            <View className="flex-row gap-3">
-              <Pressable
-                onPress={handleResetNoteColor}
-                className="flex-1 bg-gray-500 rounded-xl py-4 items-center active:opacity-70"
-              >
-                <Text className="text-white text-lg font-bold">Reset</Text>
-              </Pressable>
-              <Pressable
-                onPress={handleSaveNoteColor}
-                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
-              >
-                <Text className="text-white text-lg font-bold">Save</Text>
-              </Pressable>
-            </View>
+            {/* Save Button */}
+            <Pressable
+              onPress={handleSaveNoteColor}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+            >
+              <Text className="text-white text-lg font-bold">Save Color</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>

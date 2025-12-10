@@ -424,6 +424,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               Select Notebook Color
             </Text>
 
+            {/* Original Color Option */}
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Original Color</Text>
+              <Pressable
+                onPress={() => {
+                  setSelectedColor(originalColor);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                className="h-16 rounded-2xl items-center justify-center border-2"
+                style={{
+                  backgroundColor: originalColor,
+                  borderColor: selectedColor === originalColor ? "#3B82F6" : "#E5E7EB"
+                }}
+              >
+                <Ionicons name="book-outline" size={32} color="#FFFFFF" />
+              </Pressable>
+            </View>
+
             {/* Rainbow Gradient Slider */}
             <View className="mb-6 items-center">
               <View
@@ -466,21 +484,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               </View>
             </View>
 
-            {/* Buttons */}
-            <View className="flex-row gap-3">
-              <Pressable
-                onPress={handleResetColor}
-                className="flex-1 bg-gray-500 rounded-xl py-4 items-center active:opacity-70"
-              >
-                <Text className="text-white text-lg font-bold">Reset</Text>
-              </Pressable>
-              <Pressable
-                onPress={handleSaveColor}
-                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
-              >
-                <Text className="text-white text-lg font-bold">Save</Text>
-              </Pressable>
-            </View>
+            {/* Save Button */}
+            <Pressable
+              onPress={handleSaveColor}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+            >
+              <Text className="text-white text-lg font-bold">Save Color</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
