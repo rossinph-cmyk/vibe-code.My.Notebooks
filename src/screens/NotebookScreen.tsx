@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal, PanResponder, Linking } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal, PanResponder, Linking, ActionSheetIOS, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
@@ -10,6 +10,7 @@ import { Audio } from "expo-av";
 import { transcribeAudio } from "../api/transcribe-audio";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Clipboard from "expo-clipboard";
 
 type NotebookScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Notebook">;
 type NotebookScreenRouteProp = RouteProp<RootStackParamList, "Notebook">;
@@ -348,23 +349,41 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      console.log("Starting share with text:", noteText);
+      if (Platform.OS === 'ios') {
+        // Show action sheet with options
+        ActionSheetIOS.showActionSheetWithOptions(
+          {
+            options: ['Cancel', 'Copy to Clipboard', 'Share via Other Apps'],
+            cancelButtonIndex: 0,
+            title: 'Share Note',
+            message: 'Choose how to share your note. For WhatsApp, copy the text and paste it in WhatsApp.',
+          },
+          async (buttonIndex) => {
+            if (buttonIndex === 1) {
+              // Copy to clipboard
+              await Clipboard.setStringAsync(noteText);
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              Alert.alert('Copied!', 'Note copied to clipboard. Open WhatsApp and paste to send.');
+            } else if (buttonIndex === 2) {
+              // Use native share
+              const result = await Share.share({
+                message: noteText,
+              });
+              if (result.action === Share.sharedAction) {
+                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              }
+            }
+          }
+        );
+      } else {
+        // Android - use native share directly
+        const result = await Share.share({
+          message: noteText,
+        });
 
-      // Use the native share sheet - this is the most reliable cross-platform approach
-      const result = await Share.share({
-        message: noteText,
-      });
-
-      console.log("Share result:", result);
-
-      if (result.action === Share.sharedAction) {
-        console.log("Share completed successfully");
-        if (result.activityType) {
-          console.log("Shared via:", result.activityType);
+        if (result.action === Share.sharedAction) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      } else if (result.action === Share.dismissedAction) {
-        console.log("Share dismissed by user");
       }
     } catch (error) {
       console.error("Error sharing:", error);
