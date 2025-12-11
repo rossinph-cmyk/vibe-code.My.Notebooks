@@ -34,9 +34,23 @@ A beautiful, minimal notepad app with voice-to-text functionality. Create notebo
 
 ### Managing Notes
 
+- **Edit Text**: Tap on any note to edit its text content
+- **Change Background Color**: Tap the palette icon to select a custom background color for individual notes
+- **Change Text Color**: Tap the text icon to customize the text color for individual notes
 - **Share**: Tap the share icon on any note to send it via messaging apps or email
 - **Delete**: Tap the trash icon to delete a note
-- **Edit Notebook**: Long-press a notebook on the home screen to edit its colors or name
+
+### Color Customization
+
+Each note can have its own unique colors:
+- **Background Color**: Choose from a rainbow gradient slider, or reset to the notebook's default background
+- **Text Color**: Select any color from the gradient slider, or reset to the notebook's default text color
+- **Notebook Color**: Change the notebook cover color from the top-right palette icon
+
+All color pickers include:
+- A "Default" option to use the notebook's default color
+- A "Current" option (if different from default) to restore the note's current color
+- A smooth rainbow gradient slider for selecting any color
 
 ### Editing Notebooks
 

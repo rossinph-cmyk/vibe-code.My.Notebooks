@@ -26,6 +26,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const addNote = useNotebookStore((s) => s.addNote);
   const deleteNote = useNotebookStore((s) => s.deleteNote);
   const updateNoteColor = useNotebookStore((s) => s.updateNoteColor);
+  const updateNoteTextColor = useNotebookStore((s) => s.updateNoteTextColor);
 
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -42,6 +43,10 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [selectedNoteColor, setSelectedNoteColor] = useState("#FFFFFF");
   const [originalNoteColor, setOriginalNoteColor] = useState("#FFFFFF");
   const [noteSliderPosition, setNoteSliderPosition] = useState(0);
+  const [showNoteTextColorPicker, setShowNoteTextColorPicker] = useState(false);
+  const [selectedNoteTextColor, setSelectedNoteTextColor] = useState("#000000");
+  const [originalNoteTextColor, setOriginalNoteTextColor] = useState("#000000");
+  const [noteTextSliderPosition, setNoteTextSliderPosition] = useState(0);
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -133,6 +138,28 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     })
   ).current;
 
+  const noteTextPanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setNoteTextSliderPosition(newPosition);
+        setSelectedNoteTextColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderMove: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setNoteTextSliderPosition(newPosition);
+        setSelectedNoteTextColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderRelease: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      },
+    })
+  ).current;
+
   const handleSaveColor = () => {
     if (notebook) {
       updateNotebook(notebookId, { color: selectedColor });
@@ -181,6 +208,25 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     setShowNoteColorPicker(false);
+    setSelectedNoteId(null);
+  };
+
+  const handleNoteTextColorPress = (noteId: string, currentTextColor?: string) => {
+    const noteTextColor = currentTextColor || notebook?.textColor || "#000000";
+    setSelectedNoteId(noteId);
+    setSelectedNoteTextColor(noteTextColor);
+    setOriginalNoteTextColor(noteTextColor);
+    const position = getPositionFromColor(noteTextColor);
+    setNoteTextSliderPosition(position);
+    setShowNoteTextColorPicker(true);
+  };
+
+  const handleSaveNoteTextColor = () => {
+    if (selectedNoteId) {
+      updateNoteTextColor(notebookId, selectedNoteId, selectedNoteTextColor);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setShowNoteTextColorPicker(false);
     setSelectedNoteId(null);
   };
 
@@ -362,6 +408,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
           {notebook.notes.map((note) => {
             const isEditing = editingNoteId === note.id;
             const noteBackgroundColor = note.backgroundColor || notebook.backgroundColor;
+            const noteTextColor = note.textColor || notebook.textColor;
 
             return (
               <View
@@ -376,7 +423,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       key={i}
                       className="absolute left-0 right-0 border-b"
                       style={{
-                        borderColor: notebook.textColor,
+                        borderColor: noteTextColor,
                         opacity: 0.1,
                         top: 30 + i * 24,
                       }}
@@ -393,7 +440,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       autoFocus
                       className="text-base leading-6 mb-4"
                       style={{
-                        color: notebook.textColor,
+                        color: noteTextColor,
                         lineHeight: 24,
                         paddingTop: 6,
                         minHeight: 100,
@@ -421,7 +468,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                     <Text
                       className="text-base leading-6 mb-4"
                       style={{
-                        color: notebook.textColor,
+                        color: noteTextColor,
                         lineHeight: 24,
                         paddingTop: 6,
                       }}
@@ -431,20 +478,23 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                   </Pressable>
                 )}
 
-                <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: notebook.textColor, opacity: 0.2 }}>
-                  <Text className="text-xs" style={{ color: notebook.textColor, opacity: 0.6 }}>
+                <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: noteTextColor, opacity: 0.2 }}>
+                  <Text className="text-xs" style={{ color: noteTextColor, opacity: 0.6 }}>
                     {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}
                   </Text>
                   {!isEditing && (
                     <View className="flex-row gap-3">
                       <Pressable onPress={() => handleNoteColorPress(note.id, note.backgroundColor)} className="active:opacity-70">
-                        <Ionicons name="color-palette-outline" size={20} color={notebook.textColor} />
+                        <Ionicons name="color-palette-outline" size={20} color={noteTextColor} />
+                      </Pressable>
+                      <Pressable onPress={() => handleNoteTextColorPress(note.id, note.textColor)} className="active:opacity-70">
+                        <Ionicons name="text-outline" size={20} color={noteTextColor} />
                       </Pressable>
                       <Pressable onPress={() => handleShare(note.text)} className="active:opacity-70">
-                        <Ionicons name="share-outline" size={20} color={notebook.textColor} />
+                        <Ionicons name="share-outline" size={20} color={noteTextColor} />
                       </Pressable>
                       <Pressable onPress={() => handleDeleteNote(note.id)} className="active:opacity-70">
-                        <Ionicons name="trash-outline" size={20} color={notebook.textColor} />
+                        <Ionicons name="trash-outline" size={20} color={noteTextColor} />
                       </Pressable>
                     </View>
                   )}
@@ -723,6 +773,136 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             {/* Save Button */}
             <Pressable
               onPress={handleSaveNoteColor}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+            >
+              <Text className="text-white text-lg font-bold">Save Color</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Note Text Color Picker Modal */}
+      <Modal
+        visible={showNoteTextColorPicker}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowNoteTextColorPicker(false)}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-2xl font-bold text-gray-900">Note Text Color</Text>
+              <Pressable
+                onPress={() => setShowNoteTextColorPicker(false)}
+                className="active:opacity-70"
+              >
+                <Ionicons name="close" size={28} color="#374151" />
+              </Pressable>
+            </View>
+
+            <Text className="text-base font-semibold text-gray-700 mb-4">
+              Select Note Text Color
+            </Text>
+
+            {/* Default and Original Color Options */}
+            <View className="mb-4 flex-row gap-3">
+              {/* Default Notebook Text Color */}
+              <View className="flex-1">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">Default</Text>
+                <Pressable
+                  onPress={() => {
+                    setSelectedNoteTextColor(notebook?.textColor || "#000000");
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  className="h-16 rounded-2xl p-3 border-2"
+                  style={{
+                    backgroundColor: "#FFFFFF",
+                    borderColor: selectedNoteTextColor === (notebook?.textColor || "#000000") ? "#3B82F6" : "#E5E7EB"
+                  }}
+                >
+                  <Text style={{ color: notebook?.textColor || "#000000", fontSize: 12 }}>Notebook color</Text>
+                </Pressable>
+              </View>
+
+              {/* Original Note Text Color (if different from default) */}
+              {originalNoteTextColor !== (notebook?.textColor || "#000000") && (
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-gray-700 mb-2">Current</Text>
+                  <Pressable
+                    onPress={() => {
+                      setSelectedNoteTextColor(originalNoteTextColor);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                    className="h-16 rounded-2xl p-3 border-2"
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      borderColor: selectedNoteTextColor === originalNoteTextColor ? "#3B82F6" : "#E5E7EB"
+                    }}
+                  >
+                    <Text style={{ color: originalNoteTextColor, fontSize: 12 }}>Current color</Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+
+            {/* Rainbow Gradient Slider */}
+            <View className="mb-6 items-center">
+              <View
+                {...noteTextPanResponder.panHandlers}
+                style={{ width: sliderWidth, height: 60, borderRadius: 16, overflow: "hidden", marginBottom: 16 }}
+              >
+                <LinearGradient
+                  colors={["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ flex: 1 }}
+                />
+                {/* Slider indicator */}
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: noteTextSliderPosition * sliderWidth - 3,
+                    width: 6,
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                  }}
+                />
+              </View>
+            </View>
+
+            {/* Color Preview */}
+            <View className="mb-6">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Preview</Text>
+              <View
+                className="h-32 rounded-2xl p-4"
+                style={{ backgroundColor: "#FFFFFF" }}
+              >
+                <Text style={{ color: selectedNoteTextColor, fontSize: 16 }}>Sample note text</Text>
+                <View className="absolute inset-0 p-4">
+                  {[...Array(5)].map((_, i) => (
+                    <View
+                      key={i}
+                      className="absolute left-4 right-4 border-b"
+                      style={{
+                        borderColor: selectedNoteTextColor,
+                        opacity: 0.1,
+                        top: 24 + i * 24,
+                      }}
+                    />
+                  ))}
+                </View>
+              </View>
+            </View>
+
+            {/* Save Button */}
+            <Pressable
+              onPress={handleSaveNoteTextColor}
               className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
             >
               <Text className="text-white text-lg font-bold">Save Color</Text>

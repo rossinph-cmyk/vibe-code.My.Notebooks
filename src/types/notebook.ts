@@ -2,6 +2,7 @@ export interface Note {
   id: string;
   text: string;
   backgroundColor?: string;
+  textColor?: string;
   createdAt: number;
   updatedAt: number;
 }

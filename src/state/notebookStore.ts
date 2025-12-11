@@ -13,6 +13,7 @@ interface NotebookState {
   addNote: (notebookId: string, noteText: string) => void;
   updateNote: (notebookId: string, noteId: string, text: string) => void;
   updateNoteColor: (notebookId: string, noteId: string, backgroundColor: string) => void;
+  updateNoteTextColor: (notebookId: string, noteId: string, textColor: string) => void;
   deleteNote: (notebookId: string, noteId: string) => void;
   getNotebook: (id: string) => Notebook | undefined;
   toggleDarkMode: () => void;
@@ -118,6 +119,22 @@ export const useNotebookStore = create<NotebookState>()(
                   notes: nb.notes.map((note) =>
                     note.id === noteId
                       ? { ...note, backgroundColor, updatedAt: Date.now() }
+                      : note
+                  ),
+                }
+              : nb
+          ),
+        })),
+
+      updateNoteTextColor: (notebookId, noteId, textColor) =>
+        set((state) => ({
+          notebooks: state.notebooks.map((nb) =>
+            nb.id === notebookId
+              ? {
+                  ...nb,
+                  notes: nb.notes.map((note) =>
+                    note.id === noteId
+                      ? { ...note, textColor, updatedAt: Date.now() }
                       : note
                   ),
                 }
