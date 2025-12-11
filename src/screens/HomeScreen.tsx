@@ -290,13 +290,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <View className="flex-1 px-6 pt-8">
         {/* Header with title and controls */}
         <View className="flex-row items-center justify-between mb-2">
-          <View className="flex-1">
+          <View className="flex-1 flex-row items-center">
             <Text
               className="text-4xl font-bold"
               style={{ color: darkMode ? "#A855F7" : "#78350F" }}
             >
               My Notebooks
             </Text>
+            <View className="ml-3 p-2 rounded-full" style={{ backgroundColor: darkMode ? "#A855F7" : "#78350F" }}>
+              <Ionicons
+                name="mic"
+                size={24}
+                color={darkMode ? "#000000" : "#FFFFFF"}
+              />
+            </View>
           </View>
           <View className="flex-row gap-2">
             <Pressable
