@@ -350,33 +350,21 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
 
       console.log("Starting share with text:", noteText);
 
-      // Try to open WhatsApp directly first
-      const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(noteText)}`;
-      const canOpenWhatsApp = await Linking.canOpenURL(whatsappUrl);
+      // Use the native share sheet - this is the most reliable cross-platform approach
+      const result = await Share.share({
+        message: noteText,
+      });
 
-      if (canOpenWhatsApp) {
-        // Open WhatsApp directly with the message
-        console.log("Opening WhatsApp directly");
-        await Linking.openURL(whatsappUrl);
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      } else {
-        // Fallback to native share sheet if WhatsApp is not installed
-        console.log("WhatsApp not available, using native share");
-        const result = await Share.share({
-          message: noteText,
-        });
+      console.log("Share result:", result);
 
-        console.log("Share result:", result);
-
-        if (result.action === Share.sharedAction) {
-          console.log("Share completed successfully");
-          if (result.activityType) {
-            console.log("Shared via:", result.activityType);
-          }
-          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        } else if (result.action === Share.dismissedAction) {
-          console.log("Share dismissed by user");
+      if (result.action === Share.sharedAction) {
+        console.log("Share completed successfully");
+        if (result.activityType) {
+          console.log("Shared via:", result.activityType);
         }
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else if (result.action === Share.dismissedAction) {
+        console.log("Share dismissed by user");
       }
     } catch (error) {
       console.error("Error sharing:", error);
