@@ -16,7 +16,7 @@ const SLIDES = [
     id: 1,
     color: "#7C3AED",
     title: "Welcome to Voice Notepad!",
-    image: require("../../assets/WhatsApp Image 2025-12-11 at 22.59.11_0980f5ed-1765465155473.jpeg"),
+    image: require("../../assets/WhatsApp Image 2025-12-11 at 23.06.15_99233046-1765465638984.jpeg"),
     features: [
       {
         icon: "mic",
@@ -44,7 +44,7 @@ const SLIDES = [
     id: 2,
     color: "#EC4899",
     title: "Organize Your Notes",
-    image: require("../../assets/WhatsApp Image 2025-12-11 at 22.59.11_0980f5ed-1765465155473.jpeg"),
+    image: require("../../assets/WhatsApp Image 2025-12-11 at 23.06.16_f6d1bd59-1765465654331.jpeg"),
     features: [
       {
         icon: "book",
@@ -72,7 +72,7 @@ const SLIDES = [
     id: 3,
     color: "#D4A574",
     title: "Personalize Everything",
-    image: require("../../assets/WhatsApp Image 2025-12-11 at 22.59.11_0980f5ed-1765465155473.jpeg"),
+    image: require("../../assets/WhatsApp Image 2025-12-11 at 23.06.16_c178f76d-1765465681684.jpeg"),
     features: [
       {
         icon: "image",
@@ -100,7 +100,7 @@ const SLIDES = [
     id: 4,
     color: "#0891B2",
     title: "Advanced Features",
-    image: require("../../assets/WhatsApp Image 2025-12-11 at 22.59.11_0980f5ed-1765465155473.jpeg"),
+    image: require("../../assets/WhatsApp Image 2025-12-11 at 23.06.16_6e23342c-1765465698275.jpeg"),
     features: [
       {
         icon: "trash-outline",
