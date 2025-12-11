@@ -10,6 +10,7 @@ import { OnboardingSlideshow } from "../components/OnboardingSlideshow";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -43,7 +44,34 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [homeImageOpacity, setHomeImageOpacity] = useState(0.15);
   const [selectedHomeImageUri, setSelectedHomeImageUri] = useState<string | undefined>(undefined);
   const [showFeaturesSlideshow, setShowFeaturesSlideshow] = useState(false);
+  const [resetTapCount, setResetTapCount] = useState(0);
   const sliderWidth = 280;
+
+  const handleResetApp = async () => {
+    try {
+      await AsyncStorage.clear();
+      Alert.alert("App Reset", "Please reload the app to see the privacy policy and onboarding screens.");
+    } catch (error) {
+      Alert.alert("Error", "Failed to reset the app.");
+    }
+  };
+
+  const handleTitlePress = () => {
+    const newCount = resetTapCount + 1;
+    setResetTapCount(newCount);
+
+    if (newCount >= 5) {
+      Alert.alert(
+        "Reset App",
+        "Do you want to reset the app to first-time startup? This will show the privacy policy and onboarding screens again.",
+        [
+          { text: "Cancel", style: "cancel", onPress: () => setResetTapCount(0) },
+          { text: "Reset", style: "destructive", onPress: handleResetApp }
+        ]
+      );
+      setResetTapCount(0);
+    }
+  };
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -291,12 +319,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         {/* Header with title and controls */}
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-1 flex-row items-center">
-            <Text
-              className="text-4xl font-bold"
-              style={{ color: darkMode ? "#A855F7" : "#78350F" }}
-            >
-              My Notebooks
-            </Text>
+            <Pressable onPress={handleTitlePress}>
+              <Text
+                className="text-4xl font-bold"
+                style={{ color: darkMode ? "#A855F7" : "#78350F" }}
+              >
+                My Notebooks
+              </Text>
+            </Pressable>
             <View className="ml-3 p-2 rounded-full" style={{ backgroundColor: darkMode ? "#A855F7" : "#78350F" }}>
               <Ionicons
                 name="mic"
