@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal, PanResponder, Linking, ActionSheetIOS, Platform } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal, PanResponder, Linking, ActionSheetIOS, Platform, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
@@ -11,6 +11,7 @@ import { transcribeAudio } from "../api/transcribe-audio";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Clipboard from "expo-clipboard";
+import * as ImagePicker from "expo-image-picker";
 
 type NotebookScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Notebook">;
 type NotebookScreenRouteProp = RouteProp<RootStackParamList, "Notebook">;
@@ -251,6 +252,55 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     setEditingNoteText("");
   };
 
+  const handlePickImage = async () => {
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+      // Request permission
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (permissionResult.status !== "granted") {
+        Alert.alert("Permission Required", "Please grant photo library access to set a background image.");
+        return;
+      }
+
+      // Open image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const imageUri = result.assets[0].uri;
+        updateNotebook(notebookId, { backgroundImage: imageUri });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Failed to select image. Please try again.");
+    }
+  };
+
+  const handleRemoveImage = () => {
+    Alert.alert(
+      "Remove Background Image",
+      "Are you sure you want to remove the background image?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            updateNotebook(notebookId, { backgroundImage: undefined });
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          },
+        },
+      ]
+    );
+  };
+
   // Layout effect for header options
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -263,12 +313,25 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
         fontWeight: "bold",
       },
       headerRight: () => (
-        <Pressable
-          onPress={handleOpenNotebookColorPicker}
-          className="mr-4 active:opacity-70"
-        >
-          <Ionicons name="color-palette-outline" size={24} color="#FFFFFF" />
-        </Pressable>
+        <View className="flex-row items-center gap-4 mr-4">
+          <Pressable
+            onPress={handleOpenNotebookColorPicker}
+            className="active:opacity-70"
+          >
+            <Ionicons name="color-palette-outline" size={24} color="#FFFFFF" />
+          </Pressable>
+          <Pressable
+            onPress={notebook?.backgroundImage ? handleRemoveImage : handlePickImage}
+            onLongPress={notebook?.backgroundImage ? handlePickImage : undefined}
+            className="active:opacity-70"
+          >
+            <Ionicons
+              name={notebook?.backgroundImage ? "image" : "image-outline"}
+              size={24}
+              color="#FFFFFF"
+            />
+          </Pressable>
+        </View>
       ),
     });
   }, [navigation, notebook]);
@@ -402,6 +465,22 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
 
   return (
     <View className="flex-1" style={{ backgroundColor: notebook.color }}>
+      {/* Ghosted Background Image */}
+      {notebook.backgroundImage && (
+        <Image
+          source={{ uri: notebook.backgroundImage }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            opacity: 0.15,
+          }}
+          resizeMode="cover"
+        />
+      )}
+
       <SafeAreaView className="flex-1" edges={["bottom"]}>
         <ScrollView
           className="flex-1"

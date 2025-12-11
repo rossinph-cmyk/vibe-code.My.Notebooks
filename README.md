@@ -46,6 +46,7 @@ Each note can have its own unique colors:
 - **Background Color**: Choose from a rainbow gradient slider, or reset to the notebook's default background
 - **Text Color**: Select any color from the gradient slider, or reset to the notebook's default text color
 - **Notebook Color**: Change the notebook cover color from the top-right palette icon
+- **Background Image**: Tap the image icon in the top-right to add a ghosted background image from your photo gallery. The image will appear subtly behind your notes (15% opacity). Tap the icon again to remove the image, or long-press to change it.
 
 All color pickers include:
 - A "Default" option to use the notebook's default color

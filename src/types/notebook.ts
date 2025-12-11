@@ -13,6 +13,7 @@ export interface Notebook {
   color: string;
   backgroundColor: string;
   textColor: string;
+  backgroundImage?: string;
   notes: Note[];
   createdAt: number;
 }
