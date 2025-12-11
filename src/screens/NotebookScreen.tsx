@@ -348,23 +348,25 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      // Share the note text
-      const result = await Share.share(
-        {
-          message: noteText,
-        },
-        {
-          // iOS only options
-          subject: "Note from Notepad",
-        }
-      );
+      console.log("Starting share with text:", noteText);
+
+      // Share the note text - use only message, no other parameters that might interfere
+      const result = await Share.share({
+        message: noteText,
+      });
+
+      console.log("Share result:", result);
 
       if (result.action === Share.sharedAction) {
         // Successfully shared
+        console.log("Share completed successfully");
+        if (result.activityType) {
+          console.log("Shared via:", result.activityType);
+        }
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       } else if (result.action === Share.dismissedAction) {
         // Share was dismissed/cancelled
-        console.log("Share dismissed");
+        console.log("Share dismissed by user");
       }
     } catch (error) {
       console.error("Error sharing:", error);
