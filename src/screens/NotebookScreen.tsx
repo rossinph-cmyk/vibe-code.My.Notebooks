@@ -502,22 +502,50 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               Select Notebook Color
             </Text>
 
-            {/* Original Color Option */}
-            <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-700 mb-2">Original Color</Text>
-              <Pressable
-                onPress={() => {
-                  setSelectedColor(originalNotebookColor);
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                }}
-                className="h-16 rounded-2xl items-center justify-center border-2"
-                style={{
-                  backgroundColor: originalNotebookColor,
-                  borderColor: selectedColor === originalNotebookColor ? "#3B82F6" : "#E5E7EB"
-                }}
-              >
-                <Ionicons name="book-outline" size={32} color="#FFFFFF" />
-              </Pressable>
+            {/* Default and Original Color Options */}
+            <View className="mb-4 flex-row gap-3">
+              {/* Default Color */}
+              <View className="flex-1">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">Default</Text>
+                <Pressable
+                  onPress={() => {
+                    const defaultColor = "#E63946";
+                    setSelectedColor(defaultColor);
+                    const position = getPositionFromColor(defaultColor);
+                    setSliderPosition(position);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  className="h-16 rounded-2xl items-center justify-center border-2"
+                  style={{
+                    backgroundColor: "#E63946",
+                    borderColor: selectedColor === "#E63946" ? "#3B82F6" : "#E5E7EB"
+                  }}
+                >
+                  <Ionicons name="book-outline" size={32} color="#FFFFFF" />
+                </Pressable>
+              </View>
+
+              {/* Original Color (only if different from default) */}
+              {originalNotebookColor !== "#E63946" && (
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-gray-700 mb-2">Current</Text>
+                  <Pressable
+                    onPress={() => {
+                      setSelectedColor(originalNotebookColor);
+                      const position = getPositionFromColor(originalNotebookColor);
+                      setSliderPosition(position);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                    className="h-16 rounded-2xl items-center justify-center border-2"
+                    style={{
+                      backgroundColor: originalNotebookColor,
+                      borderColor: selectedColor === originalNotebookColor ? "#3B82F6" : "#E5E7EB"
+                    }}
+                  >
+                    <Ionicons name="book-outline" size={32} color="#FFFFFF" />
+                  </Pressable>
+                </View>
+              )}
             </View>
 
             {/* Rainbow Gradient Slider */}
