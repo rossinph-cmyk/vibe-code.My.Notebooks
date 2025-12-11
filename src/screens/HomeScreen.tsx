@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, Pressable, ScrollView, Modal, TextInput, Keyboard, PanResponder } from "react-native";
+import { View, Text, Pressable, ScrollView, Modal, TextInput, Keyboard, PanResponder, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { NotebookModal } from "../components/NotebookModal";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -20,6 +21,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const darkMode = useNotebookStore((s) => s.darkMode);
   const toggleDarkMode = useNotebookStore((s) => s.toggleDarkMode);
   const updateNotebook = useNotebookStore((s) => s.updateNotebook);
+  const updateNotebookBackgroundImage = useNotebookStore((s) => s.updateNotebookBackgroundImage);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingNotebook, setEditingNotebook] = useState<string | null>(null);
   const [editingNameId, setEditingNameId] = useState<string | null>(null);
@@ -29,6 +31,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [selectedColor, setSelectedColor] = useState("#E63946");
   const [originalColor, setOriginalColor] = useState("#E63946");
   const [sliderPosition, setSliderPosition] = useState(0);
+  const [showImagePicker, setShowImagePicker] = useState(false);
+  const [editingImageId, setEditingImageId] = useState<string | null>(null);
+  const [imageOpacity, setImageOpacity] = useState(0.15);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | undefined>(undefined);
   const sliderWidth = 280;
 
   const hslToHex = (h: number, s: number, l: number): string => {
@@ -168,6 +174,55 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setEditingColorId(null);
   };
 
+  const handleImagePress = async (notebookId: string) => {
+    const notebook = notebooks.find((nb) => nb.id === notebookId);
+    if (!notebook) return;
+
+    setEditingImageId(notebookId);
+    setSelectedImageUri(notebook.backgroundImage);
+    setImageOpacity(notebook.backgroundImageOpacity || 0.15);
+    setShowImagePicker(true);
+  };
+
+  const handlePickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      Alert.alert("Permission Required", "Please allow access to your photo library to select an image.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setSelectedImageUri(result.assets[0].uri);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImageUri(undefined);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleSaveImage = () => {
+    if (editingImageId) {
+      updateNotebookBackgroundImage(editingImageId, selectedImageUri, imageOpacity);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setShowImagePicker(false);
+    setEditingImageId(null);
+  };
+
+  const handleCloseImagePicker = () => {
+    setShowImagePicker(false);
+    setEditingImageId(null);
+  };
+
   return (
     <SafeAreaView
       className="flex-1"
@@ -220,18 +275,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   backgroundColor: notebook.color,
                 }}
               >
+                {/* Background Image */}
+                {notebook.backgroundImage && (
+                  <Image
+                    source={{ uri: notebook.backgroundImage }}
+                    className="absolute inset-0 w-full h-full"
+                    style={{ opacity: notebook.backgroundImageOpacity || 0.15 }}
+                    resizeMode="cover"
+                  />
+                )}
                 <View className="flex-1 p-6 justify-between">
                   <View className="flex-row items-center justify-between">
                     <Ionicons name="book-outline" size={36} color="#FFFFFF" />
-                    <Pressable
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        handleColorPress(notebook.id, notebook.color);
-                      }}
-                      className="bg-white/20 p-2 rounded-full active:opacity-70"
-                    >
-                      <Ionicons name="color-palette-outline" size={20} color="#FFFFFF" />
-                    </Pressable>
+                    <View className="flex-row gap-2">
+                      <Pressable
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleColorPress(notebook.id, notebook.color);
+                        }}
+                        className="bg-white/20 p-2 rounded-full active:opacity-70"
+                      >
+                        <Ionicons name="color-palette-outline" size={20} color="#FFFFFF" />
+                      </Pressable>
+                      <Pressable
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleImagePress(notebook.id);
+                        }}
+                        className="bg-white/20 p-2 rounded-full active:opacity-70"
+                      >
+                        <Ionicons name="image-outline" size={20} color="#FFFFFF" />
+                      </Pressable>
+                    </View>
                   </View>
                   <Pressable
                     onPress={() => handleNamePress(notebook.id, notebook.name)}
@@ -277,18 +352,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     marginRight: index % 2 === 0 ? "4%" : 0,
                   }}
                 >
+                  {/* Background Image */}
+                  {notebook.backgroundImage && (
+                    <Image
+                      source={{ uri: notebook.backgroundImage }}
+                      className="absolute inset-0 w-full h-full"
+                      style={{ opacity: notebook.backgroundImageOpacity || 0.15 }}
+                      resizeMode="cover"
+                    />
+                  )}
                   <View className="flex-1 p-6">
                     <View className="flex-row items-center justify-between mb-4">
                       <Ionicons name="book-outline" size={32} color="#FFFFFF" />
-                      <Pressable
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          handleColorPress(notebook.id, notebook.color);
-                        }}
-                        className="bg-white/20 p-2 rounded-full active:opacity-70"
-                      >
-                        <Ionicons name="color-palette-outline" size={18} color="#FFFFFF" />
-                      </Pressable>
+                      <View className="flex-row gap-2">
+                        <Pressable
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            handleColorPress(notebook.id, notebook.color);
+                          }}
+                          className="bg-white/20 p-2 rounded-full active:opacity-70"
+                        >
+                          <Ionicons name="color-palette-outline" size={18} color="#FFFFFF" />
+                        </Pressable>
+                        <Pressable
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            handleImagePress(notebook.id);
+                          }}
+                          className="bg-white/20 p-2 rounded-full active:opacity-70"
+                        >
+                          <Ionicons name="image-outline" size={18} color="#FFFFFF" />
+                        </Pressable>
+                      </View>
                     </View>
                     <Pressable
                       onPress={() => handleNamePress(notebook.id, notebook.name)}
@@ -491,6 +586,134 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             >
               <Text className="text-white text-lg font-bold">Save Color</Text>
             </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Image Picker Modal */}
+      <Modal
+        visible={showImagePicker}
+        animationType="slide"
+        transparent
+        onRequestClose={handleCloseImagePicker}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-2xl font-bold text-gray-900">Notebook Background</Text>
+              <Pressable
+                onPress={handleCloseImagePicker}
+                className="active:opacity-70"
+              >
+                <Ionicons name="close" size={28} color="#374151" />
+              </Pressable>
+            </View>
+
+            <Text className="text-base font-semibold text-gray-700 mb-4">
+              Choose an image or color for your notebook
+            </Text>
+
+            {/* Image Preview */}
+            {selectedImageUri ? (
+              <View className="mb-6">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">Selected Image</Text>
+                <View className="h-48 rounded-2xl overflow-hidden border-2 border-gray-200 mb-4">
+                  <View className="flex-1" style={{ backgroundColor: editingImageId ? notebooks.find((nb) => nb.id === editingImageId)?.color : "#E63946" }}>
+                    <Image
+                      source={{ uri: selectedImageUri }}
+                      className="w-full h-full"
+                      style={{ opacity: imageOpacity }}
+                      resizeMode="cover"
+                    />
+                  </View>
+                </View>
+
+                {/* Transparency Slider */}
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold text-gray-700 mb-2">
+                    Transparency: {Math.round(imageOpacity * 100)}%
+                  </Text>
+                  <View className="bg-gray-200 h-12 rounded-xl justify-center px-2">
+                    <View
+                      {...PanResponder.create({
+                        onStartShouldSetPanResponder: () => true,
+                        onMoveShouldSetPanResponder: () => true,
+                        onPanResponderGrant: (evt) => {
+                          const x = evt.nativeEvent.locationX - 16;
+                          const maxWidth = sliderWidth - 32;
+                          const newOpacity = Math.max(0, Math.min(1, x / maxWidth));
+                          setImageOpacity(newOpacity);
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        },
+                        onPanResponderMove: (evt) => {
+                          const x = evt.nativeEvent.locationX - 16;
+                          const maxWidth = sliderWidth - 32;
+                          const newOpacity = Math.max(0, Math.min(1, x / maxWidth));
+                          setImageOpacity(newOpacity);
+                        },
+                      }).panHandlers}
+                      style={{ width: sliderWidth, height: 48, justifyContent: "center" }}
+                    >
+                      <View className="bg-gray-300 h-2 rounded-full" />
+                      <View
+                        style={{
+                          position: "absolute",
+                          left: imageOpacity * (sliderWidth - 48),
+                          width: 24,
+                          height: 24,
+                          backgroundColor: "#3B82F6",
+                          borderRadius: 12,
+                          borderWidth: 3,
+                          borderColor: "#FFFFFF",
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                        }}
+                      />
+                    </View>
+                  </View>
+                </View>
+
+                {/* Remove Image Button */}
+                <Pressable
+                  onPress={handleRemoveImage}
+                  className="bg-red-100 rounded-xl py-3 items-center active:opacity-70 mb-3"
+                >
+                  <Text className="text-red-600 text-base font-semibold">Remove Image</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View className="mb-6">
+                <Pressable
+                  onPress={handlePickImage}
+                  className="h-48 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 items-center justify-center active:opacity-70"
+                >
+                  <Ionicons name="image-outline" size={64} color="#9CA3AF" />
+                  <Text className="text-gray-600 text-base font-semibold mt-4">
+                    Select an Image
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+
+            {/* Buttons */}
+            <View className="flex-row gap-3">
+              {selectedImageUri && (
+                <Pressable
+                  onPress={handlePickImage}
+                  className="flex-1 bg-gray-200 rounded-xl py-4 items-center active:opacity-70"
+                >
+                  <Text className="text-gray-900 text-base font-semibold">Change Image</Text>
+                </Pressable>
+              )}
+              <Pressable
+                onPress={handleSaveImage}
+                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+              >
+                <Text className="text-white text-base font-bold">Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>

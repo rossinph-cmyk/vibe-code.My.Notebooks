@@ -14,6 +14,7 @@ export interface Notebook {
   backgroundColor: string;
   textColor: string;
   backgroundImage?: string;
+  backgroundImageOpacity?: number;
   notes: Note[];
   createdAt: number;
 }

@@ -17,6 +17,7 @@ interface NotebookState {
   deleteNote: (notebookId: string, noteId: string) => void;
   getNotebook: (id: string) => Notebook | undefined;
   toggleDarkMode: () => void;
+  updateNotebookBackgroundImage: (id: string, imageUri: string | undefined, opacity?: number) => void;
 }
 
 export const useNotebookStore = create<NotebookState>()(
@@ -157,6 +158,19 @@ export const useNotebookStore = create<NotebookState>()(
       getNotebook: (id) => {
         return get().notebooks.find((nb) => nb.id === id);
       },
+
+      updateNotebookBackgroundImage: (id, imageUri, opacity = 0.15) =>
+        set((state) => ({
+          notebooks: state.notebooks.map((nb) =>
+            nb.id === id
+              ? {
+                  ...nb,
+                  backgroundImage: imageUri,
+                  backgroundImageOpacity: imageUri ? opacity : undefined,
+                }
+              : nb
+          ),
+        })),
     }),
     {
       name: "notebook-storage",

@@ -60,6 +60,22 @@ All color pickers include:
 3. Tap **Save Changes**
 4. Or tap **Delete Notebook** to remove it entirely
 
+### Customizing Notebook Appearance
+
+On the home screen, each notebook has two icons in the top-right corner:
+- **Color Palette Icon**: Tap to change the notebook cover color using a rainbow gradient slider
+- **Image Icon**: Tap to set a custom background image with adjustable transparency
+
+#### Setting a Background Image:
+1. Tap the image icon on any notebook
+2. Select an image from your photo gallery
+3. Use the transparency slider to adjust how visible the image is (0-100%)
+4. Tap **Save** to apply the image
+5. The image will appear subtly behind the notebook color
+6. To remove the image, open the image picker and tap **Remove Image**
+
+The background image will be visible on the home screen notebook cards, allowing you to personalize each notebook with photos while maintaining the colorful notebook aesthetic.
+
 ## Technical Details
 
 - Built with Expo SDK 53 and React Native 0.76.7
