@@ -1329,37 +1329,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       </View>
                     )}
 
-                    {/* Preview of highlights if any exist */}
-                    {tempHighlights.length > 0 && (
-                      <View className="mb-4">
-                        <Text className="text-sm font-semibold mb-2" style={{ color: notebook.textColor, opacity: 0.7 }}>
-                          Preview (tap Save to apply):
-                        </Text>
-                        <View className="rounded-2xl p-6" style={{ backgroundColor: notebook.backgroundColor }}>
-                          <View className="absolute inset-0 pointer-events-none">
-                            {[...Array(20)].map((_, i) => (
-                              <View
-                                key={i}
-                                className="absolute left-0 right-0 border-b"
-                                style={{
-                                  borderColor: notebook.textColor,
-                                  opacity: 0.1,
-                                  top: 30 + i * 24,
-                                }}
-                              />
-                            ))}
-                          </View>
-                          <Text className="text-base leading-6" style={{ color: notebook.textColor, lineHeight: 24, paddingTop: 6 }}>
-                            {renderHighlightedText(
-                              notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
-                              tempHighlights
-                            )}
-                          </Text>
-                        </View>
-                      </View>
-                    )}
-
-                    {/* Selectable text area */}
+                    {/* Single view with overlay approach */}
                     <View className="rounded-2xl p-6" style={{ backgroundColor: notebook.backgroundColor }}>
                       <View className="absolute inset-0 pointer-events-none">
                         {[...Array(50)].map((_, i) => (
@@ -1379,6 +1349,19 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                         Long press and drag to select text:
                       </Text>
 
+                      {/* Display layer - shows highlights */}
+                      {tempHighlights.length > 0 && (
+                        <View style={{ position: 'absolute', top: 54, left: 24, right: 24 }} pointerEvents="none">
+                          <Text className="text-base leading-6" style={{ color: notebook.textColor, lineHeight: 24, paddingTop: 6 }}>
+                            {renderHighlightedText(
+                              notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
+                              tempHighlights
+                            )}
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Interaction layer - handles selection */}
                       <TextInput
                         key={`text-input-${tempHighlights.length}`}
                         value={notebook.notes.find(n => n.id === highlightingNoteId)?.text || ""}
@@ -1387,7 +1370,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                         selectTextOnFocus
                         className="text-base leading-6"
                         style={{
-                          color: notebook.textColor,
+                          color: tempHighlights.length > 0 ? 'transparent' : notebook.textColor,
                           lineHeight: 24,
                           paddingTop: 6,
                           minHeight: 200,
