@@ -76,6 +76,19 @@ On the home screen, each notebook has two icons in the top-right corner:
 
 The background image will be visible on the home screen notebook cards, allowing you to personalize each notebook with photos while maintaining the colorful notebook aesthetic.
 
+### Customizing Home Screen Background
+
+In the header next to the dark/light mode toggle, there is an image icon that lets you set a custom background for the entire home screen:
+
+1. Tap the image icon in the top-right corner (next to the sun/moon icon)
+2. Select an image from your photo gallery
+3. Use the transparency slider to adjust the visibility (0-100%)
+4. Tap **Save** to apply the background
+5. The image will appear behind all your notebooks with the transparency you set
+6. To remove it, tap the image icon again and select **Remove Image**
+
+This allows you to personalize your home screen with photos, patterns, or artwork while keeping your notebooks clearly visible.
+
 ## Technical Details
 
 - Built with Expo SDK 53 and React Native 0.76.7
