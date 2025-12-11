@@ -65,9 +65,10 @@ After accepting the privacy policy, an interactive slideshow will guide you thro
 - **Highlight Text**: Tap the highlighter icon to open the highlighter modal. You can:
   - Choose from 5 preset highlighter colors (Yellow, Green, Pink, Orange, Blue)
   - Use the rainbow gradient slider to select any custom color
-  - See the full note text in a scrollable view
   - Long press on text and drag to select the portion you want to highlight
-  - The highlight applies automatically when you release - no menu needed!
+  - A blue box will appear showing your selection
+  - Tap the "Highlight" button to apply the highlight with your chosen color
+  - See a preview of all highlights above the selection area
   - Add multiple highlights in different colors
   - Tap Save to apply all highlights to your note
   - Clear all highlights by tapping the remove icon (visible when highlights exist)

@@ -57,6 +57,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [highlightingNoteId, setHighlightingNoteId] = useState<string | null>(null);
   const [tempHighlights, setTempHighlights] = useState<Array<{ start: number; end: number; color: string }>>([]);
   const [currentSelection, setCurrentSelection] = useState<{ start: number; end: number } | null>(null);
+  const [selectedText, setSelectedText] = useState<string>("");
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -339,51 +340,54 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const handleTextSelection = (noteId: string, start: number, end: number) => {
+  const handleTextSelection = (noteId: string, start: number, end: number, text: string) => {
     console.log('=== TEXT SELECTION EVENT ===');
     console.log('Start:', start, 'End:', end, 'Length:', end - start);
-    console.log('Current selection state:', currentSelection);
-    console.log('Temp highlights count:', tempHighlights.length);
-    console.log('Selected color:', highlighterColor);
+    console.log('Selected text:', text.substring(start, end));
 
     if (start === end) {
       console.log('Selection cleared (start === end)');
       setCurrentSelection(null);
-      return; // No selection
-    }
-
-    // Prevent duplicate highlights from the same selection
-    if (currentSelection?.start === start && currentSelection?.end === end) {
-      console.log('SKIPPING - Same selection as before');
+      setSelectedText("");
       return;
     }
 
-    // Store the selection
+    // Store the selection without adding highlight
     setCurrentSelection({ start, end });
-    console.log('Stored new selection, setting timeout...');
+    setSelectedText(text.substring(start, end));
+    console.log('Selection stored, waiting for user to press Highlight button');
+  };
 
-    // Add highlight after a small delay to ensure selection is stable
-    setTimeout(() => {
-      console.log('Timeout fired, checking for duplicates...');
-      setTempHighlights(prev => {
-        // Check if this range is already highlighted
-        const exists = prev.some(h => h.start === start && h.end === end && h.color === highlighterColor);
-        if (exists) {
-          console.log('SKIPPING - Highlight already exists');
-          return prev;
-        }
+  const handleApplyHighlight = () => {
+    if (!currentSelection) {
+      console.log('No selection to highlight');
+      return;
+    }
 
-        const newHighlight = { start, end, color: highlighterColor };
-        console.log('ADDING NEW HIGHLIGHT:', newHighlight);
-        console.log('Previous highlights:', prev);
-        const newHighlights = [...prev, newHighlight];
-        console.log('New highlights array:', newHighlights);
-        return newHighlights;
-      });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setCurrentSelection(null);
-      console.log('Selection cleared after timeout');
-    }, 100);
+    console.log('Applying highlight to selection:', currentSelection);
+
+    const newHighlight = {
+      start: currentSelection.start,
+      end: currentSelection.end,
+      color: highlighterColor,
+    };
+
+    // Check if this exact range already has this color
+    const exists = tempHighlights.some(
+      h => h.start === newHighlight.start && h.end === newHighlight.end && h.color === newHighlight.color
+    );
+
+    if (!exists) {
+      console.log('Adding new highlight:', newHighlight);
+      setTempHighlights(prev => [...prev, newHighlight]);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } else {
+      console.log('Highlight already exists, skipping');
+    }
+
+    // Clear selection
+    setCurrentSelection(null);
+    setSelectedText("");
   };
 
   const handleSaveHighlights = () => {
@@ -1238,7 +1242,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                 </View>
 
                 <Text className="text-sm text-gray-600 mb-4">
-                  Select a color, then long press and drag to select text. The highlight will apply automatically.
+                  Select a color, then long press and drag to select text. Tap the Highlight button to apply.
                 </Text>
 
                 {/* Common Highlighter Colors */}
@@ -1309,55 +1313,94 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               {/* Scrollable Note Text */}
               <ScrollView className="flex-1 p-6" keyboardShouldPersistTaps="handled">
                 {highlightingNoteId && notebook?.notes.find(n => n.id === highlightingNoteId) && (
-                  <View className="rounded-2xl p-6" style={{ backgroundColor: notebook.backgroundColor }}>
-                    {/* Lined paper effect */}
-                    <View className="absolute inset-0 pointer-events-none">
-                      {[...Array(50)].map((_, i) => (
-                        <View
-                          key={i}
-                          className="absolute left-0 right-0 border-b"
-                          style={{
-                            borderColor: notebook.textColor,
-                            opacity: 0.1,
-                            top: 30 + i * 24,
-                          }}
-                        />
-                      ))}
-                    </View>
-
-                    <Text className="text-sm font-semibold mb-2" style={{ color: notebook.textColor, opacity: 0.7 }}>
-                      Long press and drag to select text to highlight:
-                    </Text>
-
-                    <TextInput
-                      key={`text-input-${tempHighlights.length}`}
-                      value={notebook.notes.find(n => n.id === highlightingNoteId)?.text || ""}
-                      multiline
-                      editable={false}
-                      selectTextOnFocus
-                      className="text-base leading-6"
-                      style={{
-                        color: notebook.textColor,
-                        lineHeight: 24,
-                        paddingTop: 6,
-                        minHeight: 200,
-                      }}
-                      onSelectionChange={(event) => {
-                        const { start, end } = event.nativeEvent.selection;
-                        if (start !== end && highlightingNoteId) {
-                          handleTextSelection(highlightingNoteId, start, end);
-                        }
-                      }}
-                    >
-                      {tempHighlights.length > 0 && (
-                        <Text className="text-base leading-6" style={{ lineHeight: 24 }}>
-                          {renderHighlightedText(
-                            notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
-                            tempHighlights
-                          )}
+                  <View>
+                    {/* Show current selection info and Highlight button */}
+                    {currentSelection && selectedText && (
+                      <View className="mb-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <Text className="text-sm font-semibold text-blue-900 mb-2">
+                          Selected: &ldquo;{selectedText.length > 50 ? selectedText.substring(0, 50) + "..." : selectedText}&rdquo;
                         </Text>
-                      )}
-                    </TextInput>
+                        <Pressable
+                          onPress={handleApplyHighlight}
+                          className="bg-blue-600 rounded-lg py-3 items-center active:opacity-70"
+                        >
+                          <Text className="text-white font-bold">Highlight</Text>
+                        </Pressable>
+                      </View>
+                    )}
+
+                    {/* Preview of highlights if any exist */}
+                    {tempHighlights.length > 0 && (
+                      <View className="mb-4">
+                        <Text className="text-sm font-semibold mb-2" style={{ color: notebook.textColor, opacity: 0.7 }}>
+                          Preview (tap Save to apply):
+                        </Text>
+                        <View className="rounded-2xl p-6" style={{ backgroundColor: notebook.backgroundColor }}>
+                          <View className="absolute inset-0 pointer-events-none">
+                            {[...Array(20)].map((_, i) => (
+                              <View
+                                key={i}
+                                className="absolute left-0 right-0 border-b"
+                                style={{
+                                  borderColor: notebook.textColor,
+                                  opacity: 0.1,
+                                  top: 30 + i * 24,
+                                }}
+                              />
+                            ))}
+                          </View>
+                          <Text className="text-base leading-6" style={{ color: notebook.textColor, lineHeight: 24, paddingTop: 6 }}>
+                            {renderHighlightedText(
+                              notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
+                              tempHighlights
+                            )}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+
+                    {/* Selectable text area */}
+                    <View className="rounded-2xl p-6" style={{ backgroundColor: notebook.backgroundColor }}>
+                      <View className="absolute inset-0 pointer-events-none">
+                        {[...Array(50)].map((_, i) => (
+                          <View
+                            key={i}
+                            className="absolute left-0 right-0 border-b"
+                            style={{
+                              borderColor: notebook.textColor,
+                              opacity: 0.1,
+                              top: 30 + i * 24,
+                            }}
+                          />
+                        ))}
+                      </View>
+
+                      <Text className="text-sm font-semibold mb-2" style={{ color: notebook.textColor, opacity: 0.7 }}>
+                        Long press and drag to select text:
+                      </Text>
+
+                      <TextInput
+                        key={`text-input-${tempHighlights.length}`}
+                        value={notebook.notes.find(n => n.id === highlightingNoteId)?.text || ""}
+                        multiline
+                        editable={false}
+                        selectTextOnFocus
+                        className="text-base leading-6"
+                        style={{
+                          color: notebook.textColor,
+                          lineHeight: 24,
+                          paddingTop: 6,
+                          minHeight: 200,
+                        }}
+                        onSelectionChange={(event) => {
+                          const { start, end } = event.nativeEvent.selection;
+                          const noteText = notebook.notes.find(n => n.id === highlightingNoteId)?.text || "";
+                          if (start !== end && highlightingNoteId) {
+                            handleTextSelection(highlightingNoteId, start, end, noteText);
+                          }
+                        }}
+                      />
+                    </View>
                   </View>
                 )}
               </ScrollView>
