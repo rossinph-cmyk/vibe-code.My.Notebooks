@@ -1302,6 +1302,19 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       ))}
                     </View>
 
+                    {/* Show highlighted preview if there are temp highlights */}
+                    {tempHighlights.length > 0 ? (
+                      <View className="mb-4">
+                        <Text className="text-base leading-6" style={{ color: notebook.textColor, lineHeight: 24, paddingTop: 6 }}>
+                          {renderHighlightedText(
+                            notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
+                            tempHighlights
+                          )}
+                        </Text>
+                      </View>
+                    ) : null}
+
+                    {/* TextInput for selection - always visible for interaction */}
                     <TextInput
                       value={notebook.notes.find(n => n.id === highlightingNoteId)?.text || ""}
                       multiline
@@ -1309,10 +1322,14 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       selectTextOnFocus
                       className="text-base leading-6"
                       style={{
-                        color: notebook.textColor,
+                        color: tempHighlights.length > 0 ? "transparent" : notebook.textColor,
                         lineHeight: 24,
                         paddingTop: 6,
                         minHeight: 200,
+                        position: tempHighlights.length > 0 ? "absolute" : "relative",
+                        top: tempHighlights.length > 0 ? 30 : 0,
+                        left: tempHighlights.length > 0 ? 24 : 0,
+                        right: tempHighlights.length > 0 ? 24 : 0,
                       }}
                       onSelectionChange={(event) => {
                         const { start, end } = event.nativeEvent.selection;
@@ -1320,14 +1337,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                           handleTextSelection(highlightingNoteId, start, end);
                         }
                       }}
-                    >
-                      <Text className="text-base leading-6" style={{ lineHeight: 24 }}>
-                        {renderHighlightedText(
-                          notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
-                          tempHighlights
-                        )}
-                      </Text>
-                    </TextInput>
+                    />
                   </View>
                 )}
               </ScrollView>
