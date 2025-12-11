@@ -349,38 +349,52 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      if (Platform.OS === 'ios') {
-        // Show action sheet with options
-        ActionSheetIOS.showActionSheetWithOptions(
-          {
-            options: ['Cancel', 'Copy to Clipboard', 'Share via Other Apps'],
-            cancelButtonIndex: 0,
-            title: 'Share Note',
-            message: 'Choose how to share your note. For WhatsApp, copy the text and paste it in WhatsApp.',
-          },
-          async (buttonIndex) => {
-            if (buttonIndex === 1) {
-              // Copy to clipboard
-              await Clipboard.setStringAsync(noteText);
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert('Copied!', 'Note copied to clipboard. Open WhatsApp and paste to send.');
-            } else if (buttonIndex === 2) {
-              // Use native share
-              const result = await Share.share({
-                message: noteText,
-              });
-              if (result.action === Share.sharedAction) {
-                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      // Try to open WhatsApp directly with the message
+      const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(noteText)}`;
+
+      try {
+        // Check if WhatsApp can be opened
+        const canOpen = await Linking.canOpenURL(whatsappUrl);
+
+        if (canOpen) {
+          // Open WhatsApp directly
+          await Linking.openURL(whatsappUrl);
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        } else {
+          // WhatsApp not installed, show options
+          if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions(
+              {
+                options: ['Cancel', 'Copy to Clipboard', 'Share via Other Apps'],
+                cancelButtonIndex: 0,
+                title: 'WhatsApp Not Available',
+                message: 'WhatsApp is not installed. Choose another option.',
+              },
+              async (buttonIndex) => {
+                if (buttonIndex === 1) {
+                  await Clipboard.setStringAsync(noteText);
+                  await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  Alert.alert('Copied!', 'Note copied to clipboard.');
+                } else if (buttonIndex === 2) {
+                  const result = await Share.share({ message: noteText });
+                  if (result.action === Share.sharedAction) {
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  }
+                }
               }
+            );
+          } else {
+            // Android fallback
+            const result = await Share.share({ message: noteText });
+            if (result.action === Share.sharedAction) {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             }
           }
-        );
-      } else {
-        // Android - use native share directly
-        const result = await Share.share({
-          message: noteText,
-        });
-
+        }
+      } catch (linkingError) {
+        console.error("Linking error:", linkingError);
+        // Fallback to native share
+        const result = await Share.share({ message: noteText });
         if (result.action === Share.sharedAction) {
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }

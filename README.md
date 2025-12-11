@@ -37,7 +37,7 @@ A beautiful, minimal notepad app with voice-to-text functionality. Create notebo
 - **Edit Text**: Tap on any note to edit its text content
 - **Change Background Color**: Tap the palette icon to select a custom background color for individual notes
 - **Change Text Color**: Tap the text icon to customize the text color for individual notes
-- **Share**: Tap the share icon on any note to send it via WhatsApp, Messages, or email. When sharing to WhatsApp, select your contact and the message will be sent directly to that conversation.
+- **Share**: Tap the share icon on any note to open WhatsApp directly with the message pre-populated. You can then select any contact or group in WhatsApp to send the message. If WhatsApp is not installed, you'll have options to copy to clipboard or share via other apps.
 - **Delete**: Tap the trash icon to delete a note
 
 ### Color Customization
