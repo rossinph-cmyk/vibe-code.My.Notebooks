@@ -6,6 +6,7 @@ import { RootStackParamList } from "../navigation/RootNavigator";
 import { useNotebookStore } from "../state/notebookStore";
 import { Ionicons } from "@expo/vector-icons";
 import { NotebookModal } from "../components/NotebookModal";
+import { OnboardingSlideshow } from "../components/OnboardingSlideshow";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
@@ -41,6 +42,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [showHomeImagePicker, setShowHomeImagePicker] = useState(false);
   const [homeImageOpacity, setHomeImageOpacity] = useState(0.15);
   const [selectedHomeImageUri, setSelectedHomeImageUri] = useState<string | undefined>(undefined);
+  const [showFeaturesSlideshow, setShowFeaturesSlideshow] = useState(false);
   const sliderWidth = 280;
 
   const hslToHex = (h: number, s: number, l: number): string => {
@@ -297,6 +299,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </Text>
           </View>
           <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => {
+                setShowFeaturesSlideshow(true);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              className="p-2 rounded-full active:opacity-70"
+              style={{ backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
+            >
+              <Ionicons
+                name="help-circle-outline"
+                size={28}
+                color={darkMode ? "#A855F7" : "#78350F"}
+              />
+            </Pressable>
             <Pressable
               onPress={handleHomeImagePress}
               className="p-2 rounded-full active:opacity-70"
@@ -914,6 +930,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+      <OnboardingSlideshow
+        visible={showFeaturesSlideshow}
+        onComplete={() => setShowFeaturesSlideshow(false)}
+      />
     </SafeAreaView>
   );
 };

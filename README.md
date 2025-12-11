@@ -2,6 +2,30 @@
 
 A beautiful, minimal notepad app with voice-to-text functionality. Create notebooks with customizable colors and record notes using your voice.
 
+## First Time Setup
+
+When you first open the app, you'll be guided through two important steps:
+
+### 1. Privacy Policy
+You'll be presented with a comprehensive privacy policy explaining:
+- How your voice recordings are processed
+- Photo library and storage permissions
+- Data security and privacy practices
+- Your rights and choices
+
+You must read and accept the privacy policy to continue.
+
+### 2. Features Walkthrough
+After accepting the privacy policy, an interactive slideshow will guide you through all the app features:
+- Voice-to-text transcription
+- Manual text editing
+- Color customization for notebooks and notes
+- Background image personalization with transparency control
+- Dark mode and theme options
+- Sharing and organization features
+
+**Access Anytime**: Tap the **Features button** (help icon) in the top-right corner of the home screen to replay the walkthrough at any time.
+
 ## Features
 
 - **Create Notebooks**: Organize your notes in colorful notebooks with custom names

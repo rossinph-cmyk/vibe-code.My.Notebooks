@@ -10,6 +10,7 @@ interface NotebookState {
   homeBackgroundImage?: string;
   homeBackgroundImageOpacity?: number;
   hasAcceptedPrivacyPolicy: boolean;
+  hasCompletedOnboarding: boolean;
   addNotebook: (notebook: Omit<Notebook, "id" | "createdAt" | "notes">) => void;
   updateNotebook: (id: string, updates: Partial<Notebook>) => void;
   deleteNotebook: (id: string) => void;
@@ -23,6 +24,7 @@ interface NotebookState {
   updateNotebookBackgroundImage: (id: string, imageUri: string | undefined, opacity?: number) => void;
   updateHomeBackgroundImage: (imageUri: string | undefined, opacity?: number) => void;
   acceptPrivacyPolicy: () => void;
+  completeOnboarding: () => void;
 }
 
 export const useNotebookStore = create<NotebookState>()(
@@ -52,6 +54,7 @@ export const useNotebookStore = create<NotebookState>()(
       homeBackgroundImage: undefined,
       homeBackgroundImageOpacity: undefined,
       hasAcceptedPrivacyPolicy: false,
+      hasCompletedOnboarding: false,
 
       addNotebook: (notebook) =>
         set((state) => ({
@@ -189,6 +192,11 @@ export const useNotebookStore = create<NotebookState>()(
       acceptPrivacyPolicy: () =>
         set({
           hasAcceptedPrivacyPolicy: true,
+        }),
+
+      completeOnboarding: () =>
+        set({
+          hasCompletedOnboarding: true,
         }),
     }),
     {

@@ -7,6 +7,7 @@ import { RootStackParamList } from "./src/navigation/RootNavigator";
 import { HomeScreen } from "./src/screens/HomeScreen";
 import { NotebookScreen } from "./src/screens/NotebookScreen";
 import { PrivacyPolicyModal } from "./src/components/PrivacyPolicyModal";
+import { OnboardingSlideshow } from "./src/components/OnboardingSlideshow";
 import { useNotebookStore } from "./src/state/notebookStore";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -14,6 +15,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   const hasAcceptedPrivacyPolicy = useNotebookStore((s) => s.hasAcceptedPrivacyPolicy);
   const acceptPrivacyPolicy = useNotebookStore((s) => s.acceptPrivacyPolicy);
+  const hasCompletedOnboarding = useNotebookStore((s) => s.hasCompletedOnboarding);
+  const completeOnboarding = useNotebookStore((s) => s.completeOnboarding);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -39,6 +42,10 @@ export default function App() {
         <PrivacyPolicyModal
           visible={!hasAcceptedPrivacyPolicy}
           onAccept={acceptPrivacyPolicy}
+        />
+        <OnboardingSlideshow
+          visible={hasAcceptedPrivacyPolicy && !hasCompletedOnboarding}
+          onComplete={completeOnboarding}
         />
       </SafeAreaProvider>
     </GestureHandlerRootView>
