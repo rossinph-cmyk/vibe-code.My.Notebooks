@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal, PanResponder } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, Alert, Share, Modal, PanResponder, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
@@ -350,23 +350,33 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
 
       console.log("Starting share with text:", noteText);
 
-      // Share the note text - use only message, no other parameters that might interfere
-      const result = await Share.share({
-        message: noteText,
-      });
+      // Try to open WhatsApp directly first
+      const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(noteText)}`;
+      const canOpenWhatsApp = await Linking.canOpenURL(whatsappUrl);
 
-      console.log("Share result:", result);
-
-      if (result.action === Share.sharedAction) {
-        // Successfully shared
-        console.log("Share completed successfully");
-        if (result.activityType) {
-          console.log("Shared via:", result.activityType);
-        }
+      if (canOpenWhatsApp) {
+        // Open WhatsApp directly with the message
+        console.log("Opening WhatsApp directly");
+        await Linking.openURL(whatsappUrl);
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      } else if (result.action === Share.dismissedAction) {
-        // Share was dismissed/cancelled
-        console.log("Share dismissed by user");
+      } else {
+        // Fallback to native share sheet if WhatsApp is not installed
+        console.log("WhatsApp not available, using native share");
+        const result = await Share.share({
+          message: noteText,
+        });
+
+        console.log("Share result:", result);
+
+        if (result.action === Share.sharedAction) {
+          console.log("Share completed successfully");
+          if (result.activityType) {
+            console.log("Shared via:", result.activityType);
+          }
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        } else if (result.action === Share.dismissedAction) {
+          console.log("Share dismissed by user");
+        }
       }
     } catch (error) {
       console.error("Error sharing:", error);
