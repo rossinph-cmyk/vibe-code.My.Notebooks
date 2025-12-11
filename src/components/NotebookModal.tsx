@@ -99,9 +99,9 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
 
           <Text className="text-base font-semibold text-gray-900 mb-3">Cover Color</Text>
           <View className="flex-row flex-wrap mb-8">
-            {CRAYON_COLORS.map((color) => (
+            {CRAYON_COLORS.map((color, index) => (
               <Pressable
-                key={color.hex}
+                key={`cover-${index}-${color.hex}`}
                 onPress={() => setSelectedColor(color.hex)}
                 className="w-12 h-12 rounded-full mr-3 mb-3 active:opacity-70"
                 style={{
@@ -115,9 +115,9 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
 
           <Text className="text-base font-semibold text-gray-900 mb-3">Text Color</Text>
           <View className="flex-row flex-wrap mb-8">
-            {CRAYON_COLORS.map((color) => (
+            {CRAYON_COLORS.map((color, index) => (
               <Pressable
-                key={color.hex}
+                key={`text-${index}-${color.hex}`}
                 onPress={() => setSelectedTextColor(color.hex)}
                 className="w-12 h-12 rounded-full mr-3 mb-3 active:opacity-70"
                 style={{
@@ -131,9 +131,9 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
 
           <Text className="text-base font-semibold text-gray-900 mb-3">Background Color</Text>
           <View className="flex-row flex-wrap mb-8">
-            {[...BACKGROUND_COLORS, ...CRAYON_COLORS].map((color) => (
+            {[...BACKGROUND_COLORS, ...CRAYON_COLORS].map((color, index) => (
               <Pressable
-                key={color.hex + "bg"}
+                key={`bg-${index}-${color.hex}`}
                 onPress={() => setSelectedBgColor(color.hex)}
                 className="w-12 h-12 rounded-full mr-3 mb-3 active:opacity-70"
                 style={{
