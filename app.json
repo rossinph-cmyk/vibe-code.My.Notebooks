@@ -1,17 +1,23 @@
 {
   "expo": {
-    "name": "vibecode",
-    "slug": "vibecode",
-    "scheme": "vibecode",
+    "name": "Voice Notepad",
+    "slug": "voice-notepad",
+    "scheme": "voicenotepad",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FEF3C7"
+    },
     "newArchEnabled": true,
     "plugins": [
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow Voice Notepad to access your photos to set custom background images for your notebooks.",
+          "photosPermission": "Voice Notepad needs access to your photo library to allow you to select custom background images for your notebooks and home screen. Your photos are stored locally on your device and never uploaded to external servers.",
           "savePhotosPermission": false,
           "isAccessMediaLocationEnabled": false
         }
@@ -20,17 +26,19 @@
         "expo-camera",
         {
           "cameraPermission": false,
-          "microphonePermission": "Allow Voice Notepad to access your microphone to record voice notes and convert them to text.",
+          "microphonePermission": "Voice Notepad needs microphone access to record your voice notes. Voice recordings are immediately sent to OpenAI for transcription and are not stored on our servers. See our Privacy Policy for details.",
           "recordAudioAndroid": true
         }
       ]
     ],
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.morestonetechnologies.voicenotepad",
+      "buildNumber": "1.0.0",
       "infoPlist": {
         "LSApplicationQueriesSchemes": ["whatsapp"],
-        "NSMicrophoneUsageDescription": "Voice Notepad needs access to your microphone to record voice notes and convert them to text using speech recognition.",
-        "NSPhotoLibraryUsageDescription": "Voice Notepad needs access to your photo library to allow you to select custom background images for your notebooks and home screen.",
+        "NSMicrophoneUsageDescription": "Voice Notepad needs microphone access to record your voice notes and convert them to text using speech recognition. Voice recordings are immediately sent to OpenAI for transcription and are not stored on our servers.",
+        "NSPhotoLibraryUsageDescription": "Voice Notepad needs access to your photo library to allow you to select custom background images for your notebooks and home screen. Your photos are stored locally on your device and are never uploaded to external servers.",
         "NSPhotoLibraryAddUsageDescription": false,
         "NSCameraUsageDescription": false,
         "NSLocationWhenInUseUsageDescription": false,
@@ -64,6 +72,12 @@
       }
     },
     "android": {
+      "package": "com.morestonetechnologies.voicenotepad",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FEF3C7"
+      },
       "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -88,8 +102,31 @@
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT",
-        "android.permission.BLUETOOTH_SCAN"
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.CALL_PHONE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CHANGE_WIFI_STATE",
+        "android.permission.GET_ACCOUNTS"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.voicenotepad.app"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
-    }
+    },
+    "privacy": "public",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"]
   }
 }
