@@ -67,7 +67,7 @@ After accepting the privacy policy, an interactive slideshow will guide you thro
   - Use the rainbow gradient slider to select any custom color
   - See the full note text in a scrollable view
   - Long press on text and drag to select the portion you want to highlight
-  - When the menu appears, tap "Highlight" to apply your selected color
+  - The highlight applies automatically when you release - no menu needed!
   - Add multiple highlights in different colors
   - Tap Save to apply all highlights to your note
   - Clear all highlights by tapping the remove icon (visible when highlights exist)
