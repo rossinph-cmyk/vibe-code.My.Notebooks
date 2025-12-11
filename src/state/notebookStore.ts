@@ -9,6 +9,7 @@ interface NotebookState {
   darkMode: boolean;
   homeBackgroundImage?: string;
   homeBackgroundImageOpacity?: number;
+  hasAcceptedPrivacyPolicy: boolean;
   addNotebook: (notebook: Omit<Notebook, "id" | "createdAt" | "notes">) => void;
   updateNotebook: (id: string, updates: Partial<Notebook>) => void;
   deleteNotebook: (id: string) => void;
@@ -21,6 +22,7 @@ interface NotebookState {
   toggleDarkMode: () => void;
   updateNotebookBackgroundImage: (id: string, imageUri: string | undefined, opacity?: number) => void;
   updateHomeBackgroundImage: (imageUri: string | undefined, opacity?: number) => void;
+  acceptPrivacyPolicy: () => void;
 }
 
 export const useNotebookStore = create<NotebookState>()(
@@ -49,6 +51,7 @@ export const useNotebookStore = create<NotebookState>()(
       darkMode: false,
       homeBackgroundImage: undefined,
       homeBackgroundImageOpacity: undefined,
+      hasAcceptedPrivacyPolicy: false,
 
       addNotebook: (notebook) =>
         set((state) => ({
@@ -181,6 +184,11 @@ export const useNotebookStore = create<NotebookState>()(
         set({
           homeBackgroundImage: imageUri,
           homeBackgroundImageOpacity: imageUri ? opacity : undefined,
+        }),
+
+      acceptPrivacyPolicy: () =>
+        set({
+          hasAcceptedPrivacyPolicy: true,
         }),
     }),
     {

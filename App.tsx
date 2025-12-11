@@ -6,10 +6,15 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootStackParamList } from "./src/navigation/RootNavigator";
 import { HomeScreen } from "./src/screens/HomeScreen";
 import { NotebookScreen } from "./src/screens/NotebookScreen";
+import { PrivacyPolicyModal } from "./src/components/PrivacyPolicyModal";
+import { useNotebookStore } from "./src/state/notebookStore";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+  const hasAcceptedPrivacyPolicy = useNotebookStore((s) => s.hasAcceptedPrivacyPolicy);
+  const acceptPrivacyPolicy = useNotebookStore((s) => s.acceptPrivacyPolicy);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -31,6 +36,10 @@ export default function App() {
           </Stack.Navigator>
           <StatusBar style="auto" />
         </NavigationContainer>
+        <PrivacyPolicyModal
+          visible={!hasAcceptedPrivacyPolicy}
+          onAccept={acceptPrivacyPolicy}
+        />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
