@@ -187,28 +187,30 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
               style={{ width: SCREEN_WIDTH }}
               className="flex-1"
             >
-              <LinearGradient
-                colors={[slide.color, "#000000"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={{ flex: 1 }}
-              >
-                {/* Top Image Preview */}
-                <View className="h-64 relative">
-                  <Image
-                    source={slide.image}
-                    className="w-full h-full"
-                    style={{ opacity: 0.3 }}
-                    resizeMode="cover"
-                  />
-                  <View className="absolute inset-0 items-center justify-center">
-                    <View className="bg-white/20 backdrop-blur-lg rounded-3xl p-6 mx-6">
+              <View className="flex-1">
+                {/* Background Image Layer */}
+                <Image
+                  source={slide.image}
+                  className="absolute inset-0 w-full h-full"
+                  style={{ opacity: 0.25 }}
+                  resizeMode="cover"
+                />
+
+                {/* Gradient Overlay */}
+                <LinearGradient
+                  colors={[slide.color + "CC", slide.color + "66", "#000000"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={{ flex: 1 }}
+                >
+                  {/* Title Section */}
+                  <View className="h-64 items-center justify-center px-6">
+                    <View className="bg-white/20 backdrop-blur-lg rounded-3xl p-6">
                       <Text className="text-4xl font-bold text-white text-center">
                         {slide.title}
                       </Text>
                     </View>
                   </View>
-                </View>
 
                 {/* Features List */}
                 <ScrollView
@@ -239,6 +241,7 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
                   <View className="h-32" />
                 </ScrollView>
               </LinearGradient>
+              </View>
             </View>
           ))}
         </ScrollView>
