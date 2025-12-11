@@ -7,14 +7,89 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Voice Notepad to access your photos to set custom background images for your notebooks.",
+          "savePhotosPermission": false,
+          "isAccessMediaLocationEnabled": false
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": false,
+          "microphonePermission": "Allow Voice Notepad to access your microphone to record voice notes and convert them to text.",
+          "recordAudioAndroid": true
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["whatsapp"]
+        "LSApplicationQueriesSchemes": ["whatsapp"],
+        "NSMicrophoneUsageDescription": "Voice Notepad needs access to your microphone to record voice notes and convert them to text using speech recognition.",
+        "NSPhotoLibraryUsageDescription": "Voice Notepad needs access to your photo library to allow you to select custom background images for your notebooks and home screen.",
+        "NSPhotoLibraryAddUsageDescription": false,
+        "NSCameraUsageDescription": false,
+        "NSLocationWhenInUseUsageDescription": false,
+        "NSLocationAlwaysUsageDescription": false,
+        "NSLocationAlwaysAndWhenInUseUsageDescription": false,
+        "NSCalendarsUsageDescription": false,
+        "NSRemindersUsageDescription": false,
+        "NSContactsUsageDescription": false,
+        "NSMotionUsageDescription": false,
+        "NSSpeechRecognitionUsageDescription": false,
+        "NSAppleMusicUsageDescription": false,
+        "NSBluetoothAlwaysUsageDescription": false,
+        "NSBluetoothPeripheralUsageDescription": false,
+        "NSFaceIDUsageDescription": false
+      },
+      "permissions": {
+        "MICROPHONE": true,
+        "PHOTO_LIBRARY": true,
+        "CAMERA": false,
+        "LOCATION": false,
+        "NOTIFICATIONS": false,
+        "CONTACTS": false,
+        "CALENDARS": false,
+        "REMINDERS": false,
+        "MOTION": false,
+        "MEDIA_LIBRARY": false,
+        "SPEECH_RECOGNITION": false,
+        "APPLE_MUSIC": false,
+        "BLUETOOTH": false,
+        "FACE_ID": false
       }
     },
     "android": {
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ],
+      "blockedPermissions": [
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.READ_CALL_LOG",
+        "android.permission.WRITE_CALL_LOG",
+        "android.permission.SEND_SMS",
+        "android.permission.RECEIVE_SMS",
+        "android.permission.READ_SMS",
+        "android.permission.BODY_SENSORS",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN"
+      ]
     }
   }
 }
