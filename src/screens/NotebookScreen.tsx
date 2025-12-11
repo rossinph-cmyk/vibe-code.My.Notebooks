@@ -340,34 +340,49 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   };
 
   const handleTextSelection = (noteId: string, start: number, end: number) => {
+    console.log('=== TEXT SELECTION EVENT ===');
+    console.log('Start:', start, 'End:', end, 'Length:', end - start);
+    console.log('Current selection state:', currentSelection);
+    console.log('Temp highlights count:', tempHighlights.length);
+    console.log('Selected color:', highlighterColor);
+
     if (start === end) {
+      console.log('Selection cleared (start === end)');
       setCurrentSelection(null);
       return; // No selection
     }
 
     // Prevent duplicate highlights from the same selection
     if (currentSelection?.start === start && currentSelection?.end === end) {
+      console.log('SKIPPING - Same selection as before');
       return;
     }
 
     // Store the selection
     setCurrentSelection({ start, end });
+    console.log('Stored new selection, setting timeout...');
 
     // Add highlight after a small delay to ensure selection is stable
     setTimeout(() => {
+      console.log('Timeout fired, checking for duplicates...');
       setTempHighlights(prev => {
         // Check if this range is already highlighted
         const exists = prev.some(h => h.start === start && h.end === end && h.color === highlighterColor);
-        if (exists) return prev;
+        if (exists) {
+          console.log('SKIPPING - Highlight already exists');
+          return prev;
+        }
 
-        return [...prev, {
-          start,
-          end,
-          color: highlighterColor,
-        }];
+        const newHighlight = { start, end, color: highlighterColor };
+        console.log('ADDING NEW HIGHLIGHT:', newHighlight);
+        console.log('Previous highlights:', prev);
+        const newHighlights = [...prev, newHighlight];
+        console.log('New highlights array:', newHighlights);
+        return newHighlights;
       });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setCurrentSelection(null);
+      console.log('Selection cleared after timeout');
     }, 100);
   };
 
@@ -407,26 +422,40 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   };
 
   const renderHighlightedText = (text: string, highlights?: Array<{ start: number; end: number; color: string }>) => {
+    console.log('=== RENDERING HIGHLIGHTED TEXT ===');
+    console.log('Full text:', text);
+    console.log('Text length:', text.length);
+    console.log('Highlights:', highlights);
+
     if (!highlights || highlights.length === 0) {
+      console.log('No highlights, returning plain text');
       return <Text style={{ color: notebook?.textColor || "#000000" }}>{text}</Text>;
     }
 
     // Sort highlights by start position
     const sortedHighlights = [...highlights].sort((a, b) => a.start - b.start);
+    console.log('Sorted highlights:', sortedHighlights);
+
     const elements: React.ReactNode[] = [];
     let lastIndex = 0;
 
     sortedHighlights.forEach((highlight, index) => {
+      console.log(`Processing highlight ${index}:`, highlight);
+
       // Add text before highlight
       if (highlight.start > lastIndex) {
+        const beforeText = text.substring(lastIndex, highlight.start);
+        console.log(`Adding text before (${lastIndex} to ${highlight.start}):`, beforeText);
         elements.push(
           <Text key={`text-${index}`} style={{ color: notebook?.textColor || "#000000" }}>
-            {text.substring(lastIndex, highlight.start)}
+            {beforeText}
           </Text>
         );
       }
 
       // Add highlighted text
+      const highlightedText = text.substring(highlight.start, highlight.end);
+      console.log(`Adding highlighted text (${highlight.start} to ${highlight.end}):`, highlightedText);
       elements.push(
         <Text
           key={`highlight-${index}`}
@@ -435,7 +464,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             color: notebook?.textColor || "#000000",
           }}
         >
-          {text.substring(highlight.start, highlight.end)}
+          {highlightedText}
         </Text>
       );
 
@@ -444,13 +473,16 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
 
     // Add remaining text
     if (lastIndex < text.length) {
+      const remainingText = text.substring(lastIndex);
+      console.log(`Adding remaining text (${lastIndex} to end):`, remainingText);
       elements.push(
         <Text key="text-end" style={{ color: notebook?.textColor || "#000000" }}>
-          {text.substring(lastIndex)}
+          {remainingText}
         </Text>
       );
     }
 
+    console.log('Total elements created:', elements.length);
     return <>{elements}</>;
   };
 
