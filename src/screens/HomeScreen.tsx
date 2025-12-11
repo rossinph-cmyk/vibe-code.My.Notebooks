@@ -334,7 +334,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         >
           {/* Two notebooks displayed horizontally */}
           <View className="flex-row justify-between mb-8">
-            {notebooks.map((notebook) => (
+            {notebooks.slice(0, 2).map((notebook) => (
               <Pressable
                 key={notebook.id}
                 onPress={() => handleNotebookPress(notebook.id)}
