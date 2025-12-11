@@ -433,7 +433,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
 
     if (!highlights || highlights.length === 0) {
       console.log('No highlights, returning plain text');
-      return <Text style={{ color: notebook?.textColor || "#000000" }}>{text}</Text>;
+      return text;
     }
 
     // Sort highlights by start position
@@ -451,7 +451,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
         const beforeText = text.substring(lastIndex, highlight.start);
         console.log(`Adding text before (${lastIndex} to ${highlight.start}):`, beforeText);
         elements.push(
-          <Text key={`text-${index}`} style={{ color: notebook?.textColor || "#000000" }}>
+          <Text key={`text-${index}`}>
             {beforeText}
           </Text>
         );
@@ -465,7 +465,6 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
           key={`highlight-${index}`}
           style={{
             backgroundColor: highlight.color + "80", // Add transparency
-            color: notebook?.textColor || "#000000",
           }}
         >
           {highlightedText}
@@ -480,7 +479,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
       const remainingText = text.substring(lastIndex);
       console.log(`Adding remaining text (${lastIndex} to end):`, remainingText);
       elements.push(
-        <Text key="text-end" style={{ color: notebook?.textColor || "#000000" }}>
+        <Text key="text-end">
           {remainingText}
         </Text>
       );
@@ -1349,40 +1348,50 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                         Long press and drag to select text:
                       </Text>
 
-                      {/* Display layer - shows highlights */}
-                      {tempHighlights.length > 0 && (
-                        <View style={{ position: 'absolute', top: 54, left: 24, right: 24 }} pointerEvents="none">
-                          <Text className="text-base leading-6" style={{ color: notebook.textColor, lineHeight: 24, paddingTop: 6 }}>
-                            {renderHighlightedText(
-                              notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
-                              tempHighlights
-                            )}
-                          </Text>
-                        </View>
-                      )}
+                      <View style={{ position: 'relative' }}>
+                        {/* Display layer - shows highlights */}
+                        {tempHighlights.length > 0 && (
+                          <View style={{ position: 'absolute', top: 0, left: 0, right: 0 }} pointerEvents="none">
+                            <Text
+                              style={{
+                                color: notebook.textColor,
+                                fontSize: 16,
+                                lineHeight: 24,
+                                fontFamily: 'System',
+                                minHeight: 200,
+                              }}
+                            >
+                              {renderHighlightedText(
+                                notebook.notes.find(n => n.id === highlightingNoteId)?.text || "",
+                                tempHighlights
+                              )}
+                            </Text>
+                          </View>
+                        )}
 
-                      {/* Interaction layer - handles selection */}
-                      <TextInput
-                        key={`text-input-${tempHighlights.length}`}
-                        value={notebook.notes.find(n => n.id === highlightingNoteId)?.text || ""}
-                        multiline
-                        editable={false}
-                        selectTextOnFocus
-                        className="text-base leading-6"
-                        style={{
-                          color: tempHighlights.length > 0 ? 'transparent' : notebook.textColor,
-                          lineHeight: 24,
-                          paddingTop: 6,
-                          minHeight: 200,
-                        }}
-                        onSelectionChange={(event) => {
-                          const { start, end } = event.nativeEvent.selection;
-                          const noteText = notebook.notes.find(n => n.id === highlightingNoteId)?.text || "";
-                          if (start !== end && highlightingNoteId) {
-                            handleTextSelection(highlightingNoteId, start, end, noteText);
-                          }
-                        }}
-                      />
+                        {/* Interaction layer - handles selection */}
+                        <TextInput
+                          key={`text-input-${tempHighlights.length}`}
+                          value={notebook.notes.find(n => n.id === highlightingNoteId)?.text || ""}
+                          multiline
+                          editable={false}
+                          selectTextOnFocus
+                          style={{
+                            color: tempHighlights.length > 0 ? 'transparent' : notebook.textColor,
+                            fontSize: 16,
+                            lineHeight: 24,
+                            fontFamily: 'System',
+                            minHeight: 200,
+                          }}
+                          onSelectionChange={(event) => {
+                            const { start, end } = event.nativeEvent.selection;
+                            const noteText = notebook.notes.find(n => n.id === highlightingNoteId)?.text || "";
+                            if (start !== end && highlightingNoteId) {
+                              handleTextSelection(highlightingNoteId, start, end, noteText);
+                            }
+                          }}
+                        />
+                      </View>
                     </View>
                   </View>
                 )}
