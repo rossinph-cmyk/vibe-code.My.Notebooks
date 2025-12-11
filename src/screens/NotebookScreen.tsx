@@ -29,6 +29,8 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const deleteNote = useNotebookStore((s) => s.deleteNote);
   const updateNoteColor = useNotebookStore((s) => s.updateNoteColor);
   const updateNoteTextColor = useNotebookStore((s) => s.updateNoteTextColor);
+  const addHighlight = useNotebookStore((s) => s.addHighlight);
+  const clearHighlights = useNotebookStore((s) => s.clearHighlights);
 
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -49,6 +51,10 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [selectedNoteTextColor, setSelectedNoteTextColor] = useState("#000000");
   const [originalNoteTextColor, setOriginalNoteTextColor] = useState("#000000");
   const [noteTextSliderPosition, setNoteTextSliderPosition] = useState(0);
+  const [showHighlighterPicker, setShowHighlighterPicker] = useState(false);
+  const [highlighterColor, setHighlighterColor] = useState("#FFFF00");
+  const [highlighterSliderPosition, setHighlighterSliderPosition] = useState(0.1667);
+  const [highlightingNoteId, setHighlightingNoteId] = useState<string | null>(null);
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -155,6 +161,28 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
         const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
         setNoteTextSliderPosition(newPosition);
         setSelectedNoteTextColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderRelease: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      },
+    })
+  ).current;
+
+  const highlighterPanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setHighlighterSliderPosition(newPosition);
+        setHighlighterColor(getColorFromPosition(newPosition));
+      },
+      onPanResponderMove: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const newPosition = Math.max(0, Math.min(1, x / sliderWidth));
+        setHighlighterSliderPosition(newPosition);
+        setHighlighterColor(getColorFromPosition(newPosition));
       },
       onPanResponderRelease: () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -299,6 +327,89 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
         },
       ]
     );
+  };
+
+  const handleOpenHighlighterPicker = (noteId: string) => {
+    setHighlightingNoteId(noteId);
+    setShowHighlighterPicker(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleTextSelection = (noteId: string, start: number, end: number) => {
+    if (start === end) return; // No selection
+
+    addHighlight(notebookId, noteId, {
+      start,
+      end,
+      color: highlighterColor,
+    });
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const handleClearHighlights = (noteId: string) => {
+    Alert.alert(
+      "Clear Highlights",
+      "Remove all highlights from this note?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Clear",
+          style: "destructive",
+          onPress: () => {
+            clearHighlights(notebookId, noteId);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          },
+        },
+      ]
+    );
+  };
+
+  const renderHighlightedText = (text: string, highlights?: Array<{ start: number; end: number; color: string }>) => {
+    if (!highlights || highlights.length === 0) {
+      return <Text style={{ color: notebook?.textColor || "#000000" }}>{text}</Text>;
+    }
+
+    // Sort highlights by start position
+    const sortedHighlights = [...highlights].sort((a, b) => a.start - b.start);
+    const elements: React.ReactNode[] = [];
+    let lastIndex = 0;
+
+    sortedHighlights.forEach((highlight, index) => {
+      // Add text before highlight
+      if (highlight.start > lastIndex) {
+        elements.push(
+          <Text key={`text-${index}`} style={{ color: notebook?.textColor || "#000000" }}>
+            {text.substring(lastIndex, highlight.start)}
+          </Text>
+        );
+      }
+
+      // Add highlighted text
+      elements.push(
+        <Text
+          key={`highlight-${index}`}
+          style={{
+            backgroundColor: highlight.color + "80", // Add transparency
+            color: notebook?.textColor || "#000000",
+          }}
+        >
+          {text.substring(highlight.start, highlight.end)}
+        </Text>
+      );
+
+      lastIndex = highlight.end;
+    });
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      elements.push(
+        <Text key="text-end" style={{ color: notebook?.textColor || "#000000" }}>
+          {text.substring(lastIndex)}
+        </Text>
+      );
+    }
+
+    return <>{elements}</>;
   };
 
   // Layout effect for header options
@@ -568,16 +679,37 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                   </View>
                 ) : (
                   <Pressable onPress={() => handleEditNote(note.id, note.text)}>
-                    <Text
+                    <TextInput
+                      value={note.text}
+                      multiline
+                      editable={false}
                       className="text-base leading-6 mb-4"
                       style={{
                         color: noteTextColor,
                         lineHeight: 24,
                         paddingTop: 6,
                       }}
+                      selection={
+                        highlightingNoteId === note.id
+                          ? undefined
+                          : { start: 0, end: 0 }
+                      }
+                      selectTextOnFocus={highlightingNoteId === note.id}
+                      onSelectionChange={(event) => {
+                        if (highlightingNoteId === note.id) {
+                          const { start, end } = event.nativeEvent.selection;
+                          if (start !== end) {
+                            handleTextSelection(note.id, start, end);
+                            setHighlightingNoteId(null);
+                            setShowHighlighterPicker(false);
+                          }
+                        }
+                      }}
                     >
-                      {note.text}
-                    </Text>
+                      <Text className="text-base leading-6" style={{ lineHeight: 24 }}>
+                        {renderHighlightedText(note.text, note.highlights)}
+                      </Text>
+                    </TextInput>
                   </Pressable>
                 )}
 
@@ -593,6 +725,14 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       <Pressable onPress={() => handleNoteTextColorPress(note.id, note.textColor)} className="active:opacity-70">
                         <Ionicons name="text-outline" size={20} color={noteTextColor} />
                       </Pressable>
+                      <Pressable onPress={() => handleOpenHighlighterPicker(note.id)} className="active:opacity-70">
+                        <Ionicons name="color-fill-outline" size={20} color={noteTextColor} />
+                      </Pressable>
+                      {note.highlights && note.highlights.length > 0 && (
+                        <Pressable onPress={() => handleClearHighlights(note.id)} className="active:opacity-70">
+                          <Ionicons name="remove-circle-outline" size={20} color={noteTextColor} />
+                        </Pressable>
+                      )}
                       <Pressable onPress={() => handleShare(note.text)} className="active:opacity-70">
                         <Ionicons name="share-outline" size={20} color={noteTextColor} />
                       </Pressable>
@@ -1009,6 +1149,126 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
             >
               <Text className="text-white text-lg font-bold">Save Color</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Highlighter Color Picker Modal */}
+      <Modal
+        visible={showHighlighterPicker}
+        animationType="slide"
+        transparent
+        onRequestClose={() => {
+          setShowHighlighterPicker(false);
+          setHighlightingNoteId(null);
+        }}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-2xl font-bold text-gray-900">Highlighter</Text>
+              <Pressable
+                onPress={() => {
+                  setShowHighlighterPicker(false);
+                  setHighlightingNoteId(null);
+                }}
+                className="active:opacity-70"
+              >
+                <Ionicons name="close" size={28} color="#374151" />
+              </Pressable>
+            </View>
+
+            <Text className="text-base font-semibold text-gray-700 mb-4">
+              Select a highlighter color, then drag your finger over any text to highlight it.
+            </Text>
+
+            {/* Common Highlighter Colors */}
+            <View className="mb-4 flex-row gap-3 flex-wrap">
+              {[
+                { name: "Yellow", color: "#FFFF00" },
+                { name: "Green", color: "#00FF00" },
+                { name: "Pink", color: "#FF69B4" },
+                { name: "Orange", color: "#FFA500" },
+                { name: "Blue", color: "#00BFFF" },
+              ].map((item) => (
+                <Pressable
+                  key={item.name}
+                  onPress={() => {
+                    setHighlighterColor(item.color);
+                    const position = getPositionFromColor(item.color);
+                    setHighlighterSliderPosition(position);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  className="flex-1 min-w-[80px]"
+                >
+                  <View
+                    className="h-16 rounded-2xl items-center justify-center border-2"
+                    style={{
+                      backgroundColor: item.color + "80",
+                      borderColor: highlighterColor === item.color ? "#3B82F6" : "#E5E7EB",
+                    }}
+                  >
+                    <Text className="text-gray-900 text-xs font-semibold">{item.name}</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+
+            {/* Rainbow Gradient Slider */}
+            <View className="mb-6 items-center">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Custom Color</Text>
+              <View
+                {...highlighterPanResponder.panHandlers}
+                style={{ width: sliderWidth, height: 60, borderRadius: 16, overflow: "hidden", marginBottom: 16 }}
+              >
+                <LinearGradient
+                  colors={["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ flex: 1 }}
+                />
+                {/* Slider indicator */}
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: highlighterSliderPosition * sliderWidth - 3,
+                    width: 6,
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                  }}
+                />
+              </View>
+            </View>
+
+            {/* Color Preview */}
+            <View className="mb-6">
+              <Text className="text-sm font-semibold text-gray-700 mb-2">Preview</Text>
+              <View className="h-20 rounded-2xl p-4 bg-white border border-gray-200">
+                <Text className="text-gray-900 text-base">
+                  This is <Text style={{ backgroundColor: highlighterColor + "80" }}>highlighted text</Text> in your note
+                </Text>
+              </View>
+            </View>
+
+            {/* Start Highlighting Button */}
+            <Pressable
+              onPress={() => {
+                if (highlightingNoteId) {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                }
+              }}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+            >
+              <Text className="text-white text-lg font-bold">
+                {highlightingNoteId ? "Now drag over text to highlight" : "Select Color & Start"}
+              </Text>
             </Pressable>
           </View>
         </View>

@@ -1,8 +1,15 @@
+export interface HighlightRange {
+  start: number;
+  end: number;
+  color: string;
+}
+
 export interface Note {
   id: string;
   text: string;
   backgroundColor?: string;
   textColor?: string;
+  highlights?: HighlightRange[];
   createdAt: number;
   updatedAt: number;
 }

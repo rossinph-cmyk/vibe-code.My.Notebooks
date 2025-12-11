@@ -31,6 +31,7 @@ After accepting the privacy policy, an interactive slideshow will guide you thro
 - **Create Notebooks**: Organize your notes in colorful notebooks with custom names
 - **Voice Recording**: Tap to record, tap to stop - voice is automatically transcribed to text
 - **Customizable Design**: Choose from 64 crayon colors for notebook covers, text, and backgrounds
+- **Text Highlighting**: Highlight important text with customizable colors - choose from preset colors or create your own
 - **Lined Paper Effect**: Notes display on realistic lined paper for a familiar writing experience
 - **Share Notes**: Easily share your notes via messaging apps or email
 - **No Backend Required**: All data stored locally on your device
@@ -61,6 +62,10 @@ After accepting the privacy policy, an interactive slideshow will guide you thro
 - **Edit Text**: Tap on any note to edit its text content
 - **Change Background Color**: Tap the palette icon to select a custom background color for individual notes
 - **Change Text Color**: Tap the text icon to customize the text color for individual notes
+- **Highlight Text**: Tap the highlighter icon to open the highlighter picker. Select a color, then drag your finger over any text in the note to highlight it. You can:
+  - Choose from 5 preset highlighter colors (Yellow, Green, Pink, Orange, Blue)
+  - Use the rainbow gradient slider to select any custom color
+  - Clear all highlights by tapping the remove icon (visible when highlights exist)
 - **Share**: Tap the share icon on any note to open WhatsApp directly with the message pre-populated. You can then select any contact or group in WhatsApp to send the message. If WhatsApp is not installed, you'll have options to copy to clipboard or share via other apps.
 - **Delete**: Tap the trash icon to delete a note
 

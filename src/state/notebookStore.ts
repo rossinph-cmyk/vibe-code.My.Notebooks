@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { v4 as uuidv4 } from "uuid";
-import { Notebook, Note } from "../types/notebook";
+import { Notebook, Note, HighlightRange } from "../types/notebook";
 
 interface NotebookState {
   notebooks: Notebook[];
@@ -18,6 +18,9 @@ interface NotebookState {
   updateNote: (notebookId: string, noteId: string, text: string) => void;
   updateNoteColor: (notebookId: string, noteId: string, backgroundColor: string) => void;
   updateNoteTextColor: (notebookId: string, noteId: string, textColor: string) => void;
+  addHighlight: (notebookId: string, noteId: string, highlight: HighlightRange) => void;
+  removeHighlight: (notebookId: string, noteId: string, start: number, end: number) => void;
+  clearHighlights: (notebookId: string, noteId: string) => void;
   deleteNote: (notebookId: string, noteId: string) => void;
   getNotebook: (id: string) => Notebook | undefined;
   toggleDarkMode: () => void;
@@ -147,6 +150,68 @@ export const useNotebookStore = create<NotebookState>()(
                   notes: nb.notes.map((note) =>
                     note.id === noteId
                       ? { ...note, textColor, updatedAt: Date.now() }
+                      : note
+                  ),
+                }
+              : nb
+          ),
+        })),
+
+      addHighlight: (notebookId, noteId, highlight) =>
+        set((state) => ({
+          notebooks: state.notebooks.map((nb) =>
+            nb.id === notebookId
+              ? {
+                  ...nb,
+                  notes: nb.notes.map((note) =>
+                    note.id === noteId
+                      ? {
+                          ...note,
+                          highlights: [...(note.highlights || []), highlight],
+                          updatedAt: Date.now(),
+                        }
+                      : note
+                  ),
+                }
+              : nb
+          ),
+        })),
+
+      removeHighlight: (notebookId, noteId, start, end) =>
+        set((state) => ({
+          notebooks: state.notebooks.map((nb) =>
+            nb.id === notebookId
+              ? {
+                  ...nb,
+                  notes: nb.notes.map((note) =>
+                    note.id === noteId
+                      ? {
+                          ...note,
+                          highlights: (note.highlights || []).filter(
+                            (h) => h.start !== start || h.end !== end
+                          ),
+                          updatedAt: Date.now(),
+                        }
+                      : note
+                  ),
+                }
+              : nb
+          ),
+        })),
+
+      clearHighlights: (notebookId, noteId) =>
+        set((state) => ({
+          notebooks: state.notebooks.map((nb) =>
+            nb.id === notebookId
+              ? {
+                  ...nb,
+                  notes: nb.notes.map((note) =>
+                    note.id === noteId
+                      ? {
+                          ...note,
+                          highlights: [],
+                          updatedAt: Date.now(),
+                        }
                       : note
                   ),
                 }
