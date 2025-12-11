@@ -56,6 +56,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [highlighterSliderPosition, setHighlighterSliderPosition] = useState(0.1667);
   const [highlightingNoteId, setHighlightingNoteId] = useState<string | null>(null);
   const [tempHighlights, setTempHighlights] = useState<Array<{ start: number; end: number; color: string }>>([]);
+  const [currentSelection, setCurrentSelection] = useState<{ start: number; end: number } | null>(null);
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -339,15 +340,44 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   };
 
   const handleTextSelection = (noteId: string, start: number, end: number) => {
-    if (start === end) return; // No selection
+    if (start === end) {
+      setCurrentSelection(null);
+      return; // No selection
+    }
 
-    // Add to temp highlights instead of saving immediately
-    setTempHighlights(prev => [...prev, {
-      start,
-      end,
-      color: highlighterColor,
-    }]);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Store the current selection
+    setCurrentSelection({ start, end });
+
+    // Show action sheet with Highlight option
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Highlight'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            // Highlight button pressed
+            setTempHighlights(prev => [...prev, {
+              start,
+              end,
+              color: highlighterColor,
+            }]);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
+          setCurrentSelection(null);
+        }
+      );
+    } else {
+      // For Android, directly add highlight
+      setTempHighlights(prev => [...prev, {
+        start,
+        end,
+        color: highlighterColor,
+      }]);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setCurrentSelection(null);
+    }
   };
 
   const handleSaveHighlights = () => {
@@ -1185,7 +1215,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                 </View>
 
                 <Text className="text-sm text-gray-600 mb-4">
-                  Select a color, then drag your finger over any text below to highlight it.
+                  Select a color, then long press and drag to select text below. Tap &ldquo;Highlight&rdquo; when the menu appears.
                 </Text>
 
                 {/* Common Highlighter Colors */}
