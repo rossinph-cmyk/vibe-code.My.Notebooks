@@ -350,58 +350,32 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
       // Try to open WhatsApp directly with the message
+      // Skip canOpenURL check as it requires Info.plist configuration
       const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(noteText)}`;
 
-      try {
-        // Check if WhatsApp can be opened
-        const canOpen = await Linking.canOpenURL(whatsappUrl);
+      // Try opening WhatsApp directly - this will work if WhatsApp is installed
+      const opened = await Linking.openURL(whatsappUrl).then(() => true).catch(() => false);
 
-        if (canOpen) {
-          // Open WhatsApp directly
-          await Linking.openURL(whatsappUrl);
-          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        } else {
-          // WhatsApp not installed, show options
-          if (Platform.OS === 'ios') {
-            ActionSheetIOS.showActionSheetWithOptions(
-              {
-                options: ['Cancel', 'Copy to Clipboard', 'Share via Other Apps'],
-                cancelButtonIndex: 0,
-                title: 'WhatsApp Not Available',
-                message: 'WhatsApp is not installed. Choose another option.',
-              },
-              async (buttonIndex) => {
-                if (buttonIndex === 1) {
-                  await Clipboard.setStringAsync(noteText);
-                  await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                  Alert.alert('Copied!', 'Note copied to clipboard.');
-                } else if (buttonIndex === 2) {
-                  const result = await Share.share({ message: noteText });
-                  if (result.action === Share.sharedAction) {
-                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                  }
-                }
-              }
-            );
-          } else {
-            // Android fallback
-            const result = await Share.share({ message: noteText });
-            if (result.action === Share.sharedAction) {
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
-          }
-        }
-      } catch (linkingError) {
-        console.error("Linking error:", linkingError);
-        // Fallback to native share
+      if (opened) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        // WhatsApp not available, use native share
         const result = await Share.share({ message: noteText });
         if (result.action === Share.sharedAction) {
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
       }
     } catch (error) {
-      console.error("Error sharing:", error);
-      Alert.alert("Share Error", "Failed to share the note. Please try again.");
+      // Fallback to native share sheet
+      try {
+        const result = await Share.share({ message: noteText });
+        if (result.action === Share.sharedAction) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } catch (shareError) {
+        console.error("Error sharing:", shareError);
+        Alert.alert("Share Error", "Failed to share the note. Please try again.");
+      }
     }
   };
 
