@@ -347,16 +347,28 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const handleShare = async (noteText: string) => {
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const result = await Share.share({
-        message: noteText,
-      });
+
+      // Share the note text
+      const result = await Share.share(
+        {
+          message: noteText,
+        },
+        {
+          // iOS only options
+          subject: "Note from Notepad",
+        }
+      );
 
       if (result.action === Share.sharedAction) {
         // Successfully shared
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else if (result.action === Share.dismissedAction) {
+        // Share was dismissed/cancelled
+        console.log("Share dismissed");
       }
     } catch (error) {
       console.error("Error sharing:", error);
+      Alert.alert("Share Error", "Failed to share the note. Please try again.");
     }
   };
 
