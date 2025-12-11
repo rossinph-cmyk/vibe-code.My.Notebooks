@@ -347,9 +347,14 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const handleShare = async (noteText: string) => {
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      await Share.share({
+      const result = await Share.share({
         message: noteText,
       });
+
+      if (result.action === Share.sharedAction) {
+        // Successfully shared
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
     } catch (error) {
       console.error("Error sharing:", error);
     }
