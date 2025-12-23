@@ -769,7 +769,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                   </Pressable>
                 )}
 
-                <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: noteTextColor, opacity: 0.2 }}>
+                <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: noteTextColor + "33" }}>
                   <Text className="text-xs" style={{ color: noteTextColor, opacity: 0.6 }}>
                     {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}
                   </Text>
