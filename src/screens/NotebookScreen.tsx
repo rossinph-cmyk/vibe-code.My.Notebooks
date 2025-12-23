@@ -844,10 +844,10 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                 opacity: isTranscribing || isRecording ? 0.5 : 1,
               }}
             >
-              <Ionicons name="document-text" size={32} color={notebook.color} />
+              <Text style={{ fontSize: 32, fontWeight: "bold", color: notebook.color }}>T</Text>
             </Pressable>
             <Text className="text-sm font-medium mt-3 text-white">
-              Tap to Type
+              Tap to Text
             </Text>
           </View>
 
