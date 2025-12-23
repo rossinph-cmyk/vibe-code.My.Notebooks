@@ -773,30 +773,32 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                   <Text className="text-xs" style={{ color: noteTextColor, opacity: 0.6 }}>
                     {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}
                   </Text>
-                  {!isEditing && (
-                    <View className="flex-row gap-3">
-                      <Pressable onPress={() => handleNoteColorPress(note.id, note.backgroundColor)} className="active:opacity-70">
-                        <Ionicons name="color-palette-outline" size={20} color={noteTextColor} />
-                      </Pressable>
-                      <Pressable onPress={() => handleNoteTextColorPress(note.id, note.textColor)} className="active:opacity-70">
-                        <Ionicons name="text-outline" size={20} color={noteTextColor} />
-                      </Pressable>
-                      <Pressable onPress={() => handleOpenHighlighterPicker(note.id)} className="active:opacity-70">
-                        <Ionicons name="color-fill-outline" size={20} color={noteTextColor} />
-                      </Pressable>
-                      {note.highlights && note.highlights.length > 0 && (
-                        <Pressable onPress={() => handleClearHighlights(note.id)} className="active:opacity-70">
-                          <Ionicons name="remove-circle-outline" size={20} color={noteTextColor} />
+                  <View className="flex-row gap-3">
+                    <Pressable onPress={() => handleNoteColorPress(note.id, note.backgroundColor)} className="active:opacity-70">
+                      <Ionicons name="color-palette-outline" size={20} color={noteTextColor} />
+                    </Pressable>
+                    <Pressable onPress={() => handleNoteTextColorPress(note.id, note.textColor)} className="active:opacity-70">
+                      <Ionicons name="text-outline" size={20} color={noteTextColor} />
+                    </Pressable>
+                    {!isEditing && (
+                      <>
+                        <Pressable onPress={() => handleOpenHighlighterPicker(note.id)} className="active:opacity-70">
+                          <Ionicons name="color-fill-outline" size={20} color={noteTextColor} />
                         </Pressable>
-                      )}
-                      <Pressable onPress={() => handleShare(note.text)} className="active:opacity-70">
-                        <Ionicons name="share-outline" size={20} color={noteTextColor} />
-                      </Pressable>
-                      <Pressable onPress={() => handleDeleteNote(note.id)} className="active:opacity-70">
-                        <Ionicons name="trash-outline" size={20} color={noteTextColor} />
-                      </Pressable>
-                    </View>
-                  )}
+                        {note.highlights && note.highlights.length > 0 && (
+                          <Pressable onPress={() => handleClearHighlights(note.id)} className="active:opacity-70">
+                            <Ionicons name="remove-circle-outline" size={20} color={noteTextColor} />
+                          </Pressable>
+                        )}
+                        <Pressable onPress={() => handleShare(note.text)} className="active:opacity-70">
+                          <Ionicons name="share-outline" size={20} color={noteTextColor} />
+                        </Pressable>
+                        <Pressable onPress={() => handleDeleteNote(note.id)} className="active:opacity-70">
+                          <Ionicons name="trash-outline" size={20} color={noteTextColor} />
+                        </Pressable>
+                      </>
+                    )}
+                  </View>
                 </View>
               </View>
             );
