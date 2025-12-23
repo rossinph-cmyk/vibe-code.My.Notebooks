@@ -58,6 +58,8 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
   const [tempHighlights, setTempHighlights] = useState<Array<{ start: number; end: number; color: string }>>([]);
   const [currentSelection, setCurrentSelection] = useState<{ start: number; end: number } | null>(null);
   const [selectedText, setSelectedText] = useState<string>("");
+  const [showTextInputModal, setShowTextInputModal] = useState(false);
+  const [newNoteText, setNewNoteText] = useState("");
 
   const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
@@ -824,28 +826,54 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
           })}
         </ScrollView>
 
-        {/* Recording Button */}
-        <View className="items-center pb-8">
-          <Pressable
-            onPress={isRecording ? stopRecording : startRecording}
-            disabled={isTranscribing}
-            className="items-center justify-center rounded-full shadow-2xl active:opacity-80"
-            style={{
-              width: 80,
-              height: 80,
-              backgroundColor: isRecording ? "#EF4444" : "#FFFFFF",
-              opacity: isTranscribing ? 0.5 : 1,
-            }}
-          >
-            <Ionicons
-              name={isRecording ? "stop" : "mic"}
-              size={40}
-              color={isRecording ? "#FFFFFF" : notebook.color}
-            />
-          </Pressable>
-          <Text className="text-sm font-medium mt-3 text-white">
-            {isRecording ? "Tap to Stop" : isTranscribing ? "Processing..." : "Tap to Record"}
-          </Text>
+        {/* Input Buttons - Text and Record */}
+        <View className="flex-row items-center justify-center gap-8 pb-8">
+          {/* Text Input Button */}
+          <View className="items-center">
+            <Pressable
+              onPress={() => {
+                setShowTextInputModal(true);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              disabled={isTranscribing || isRecording}
+              className="items-center justify-center rounded-full shadow-2xl active:opacity-80"
+              style={{
+                width: 70,
+                height: 70,
+                backgroundColor: "#FFFFFF",
+                opacity: isTranscribing || isRecording ? 0.5 : 1,
+              }}
+            >
+              <Ionicons name="document-text" size={32} color={notebook.color} />
+            </Pressable>
+            <Text className="text-sm font-medium mt-3 text-white">
+              Tap to Type
+            </Text>
+          </View>
+
+          {/* Record Button */}
+          <View className="items-center">
+            <Pressable
+              onPress={isRecording ? stopRecording : startRecording}
+              disabled={isTranscribing}
+              className="items-center justify-center rounded-full shadow-2xl active:opacity-80"
+              style={{
+                width: 70,
+                height: 70,
+                backgroundColor: isRecording ? "#EF4444" : "#FFFFFF",
+                opacity: isTranscribing ? 0.5 : 1,
+              }}
+            >
+              <Ionicons
+                name={isRecording ? "stop" : "mic"}
+                size={32}
+                color={isRecording ? "#FFFFFF" : notebook.color}
+              />
+            </Pressable>
+            <Text className="text-sm font-medium mt-3 text-white">
+              {isRecording ? "Tap to Stop" : isTranscribing ? "Processing..." : "Tap to Record"}
+            </Text>
+          </View>
         </View>
       </SafeAreaView>
 
@@ -1429,6 +1457,68 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
               </View>
             </View>
           </SafeAreaView>
+        </View>
+      </Modal>
+
+      {/* Text Input Modal */}
+      <Modal
+        visible={showTextInputModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => {
+          setShowTextInputModal(false);
+          setNewNoteText("");
+        }}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-2xl font-bold text-gray-900">New Note</Text>
+              <Pressable
+                onPress={() => {
+                  setShowTextInputModal(false);
+                  setNewNoteText("");
+                }}
+                className="active:opacity-70"
+              >
+                <Ionicons name="close" size={28} color="#374151" />
+              </Pressable>
+            </View>
+
+            <Text className="text-base font-semibold text-gray-700 mb-4">
+              Type your note below
+            </Text>
+
+            <TextInput
+              value={newNoteText}
+              onChangeText={setNewNoteText}
+              multiline
+              autoFocus
+              placeholder="Start typing your note..."
+              placeholderTextColor="#9CA3AF"
+              className="bg-gray-100 rounded-xl px-4 py-4 text-base text-gray-900 mb-6"
+              style={{
+                minHeight: 150,
+                textAlignVertical: "top",
+              }}
+            />
+
+            <Pressable
+              onPress={() => {
+                if (newNoteText.trim()) {
+                  addNote(notebookId, newNoteText.trim());
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  setNewNoteText("");
+                  setShowTextInputModal(false);
+                }
+              }}
+              disabled={!newNoteText.trim()}
+              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+              style={{ opacity: !newNoteText.trim() ? 0.5 : 1 }}
+            >
+              <Text className="text-white text-lg font-bold">Save Note</Text>
+            </Pressable>
+          </View>
         </View>
       </Modal>
     </View>
