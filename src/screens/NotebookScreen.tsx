@@ -70,6 +70,21 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
     return `#${f(0)}${f(8)}${f(4)}`;
   };
 
+  // Helper function to get luminance of a color
+  const getLuminance = (hexColor: string): number => {
+    const hex = hexColor.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    return 0.299 * r + 0.587 * g + 0.114 * b;
+  };
+
+  // Helper function to get contrasting color for icons based on background
+  const getContrastingColor = (backgroundColor: string): string => {
+    const luminance = getLuminance(backgroundColor);
+    return luminance > 0.5 ? "#000000" : "#FFFFFF";
+  };
+
   const getColorFromPosition = (position: number): string => {
     const hue = position * 360;
     return hslToHex(hue, 100, 50);
@@ -700,6 +715,8 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
             const isEditing = editingNoteId === note.id;
             const noteBackgroundColor = note.backgroundColor || notebook.backgroundColor;
             const noteTextColor = note.textColor || notebook.textColor;
+            // Use contrasting color for icons to ensure visibility on any background
+            const iconColor = getContrastingColor(noteBackgroundColor);
 
             return (
               <View
@@ -714,7 +731,7 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       key={i}
                       className="absolute left-0 right-0 border-b"
                       style={{
-                        borderColor: noteTextColor,
+                        borderColor: iconColor,
                         opacity: 0.1,
                         top: 30 + i * 24,
                       }}
@@ -731,11 +748,13 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       autoFocus
                       className="text-base leading-6 mb-4"
                       style={{
-                        color: noteTextColor,
+                        color: iconColor,
                         lineHeight: 24,
                         paddingTop: 6,
                         minHeight: 100,
                       }}
+                      placeholderTextColor={iconColor + "80"}
+                      placeholder="Type your note here..."
                     />
                     <View className="flex-row gap-3 mb-4">
                       <Pressable
@@ -769,32 +788,32 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                   </Pressable>
                 )}
 
-                <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: noteTextColor + "33" }}>
-                  <Text className="text-xs" style={{ color: noteTextColor, opacity: 0.6 }}>
+                <View className="flex-row items-center justify-between border-t pt-3" style={{ borderColor: iconColor + "33" }}>
+                  <Text className="text-xs" style={{ color: iconColor, opacity: 0.6 }}>
                     {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}
                   </Text>
                   <View className="flex-row gap-3">
                     <Pressable onPress={() => handleNoteColorPress(note.id, note.backgroundColor)} className="active:opacity-70">
-                      <Ionicons name="color-palette-outline" size={20} color={noteTextColor} />
+                      <Ionicons name="color-palette-outline" size={20} color={iconColor} />
                     </Pressable>
                     <Pressable onPress={() => handleNoteTextColorPress(note.id, note.textColor)} className="active:opacity-70">
-                      <Ionicons name="text-outline" size={20} color={noteTextColor} />
+                      <Ionicons name="text-outline" size={20} color={iconColor} />
                     </Pressable>
                     {!isEditing && (
                       <>
                         <Pressable onPress={() => handleOpenHighlighterPicker(note.id)} className="active:opacity-70">
-                          <Ionicons name="color-fill-outline" size={20} color={noteTextColor} />
+                          <Ionicons name="color-fill-outline" size={20} color={iconColor} />
                         </Pressable>
                         {note.highlights && note.highlights.length > 0 && (
                           <Pressable onPress={() => handleClearHighlights(note.id)} className="active:opacity-70">
-                            <Ionicons name="remove-circle-outline" size={20} color={noteTextColor} />
+                            <Ionicons name="remove-circle-outline" size={20} color={iconColor} />
                           </Pressable>
                         )}
                         <Pressable onPress={() => handleShare(note.text)} className="active:opacity-70">
-                          <Ionicons name="share-outline" size={20} color={noteTextColor} />
+                          <Ionicons name="share-outline" size={20} color={iconColor} />
                         </Pressable>
                         <Pressable onPress={() => handleDeleteNote(note.id)} className="active:opacity-70">
-                          <Ionicons name="trash-outline" size={20} color={noteTextColor} />
+                          <Ionicons name="trash-outline" size={20} color={iconColor} />
                         </Pressable>
                       </>
                     )}
