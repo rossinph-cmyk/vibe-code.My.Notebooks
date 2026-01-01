@@ -132,6 +132,19 @@ This allows you to personalize your home screen with photos, patterns, or artwor
 - Native iOS design following Apple Human Interface Guidelines
 - Haptic feedback for enhanced user experience
 
+## Android Build Configuration
+
+The app is configured with R8/ProGuard optimization for release builds:
+
+- **R8 Code Shrinking**: Enabled to remove unused code and reduce APK size
+- **Resource Shrinking**: Removes unused resources from the final build
+- **ProGuard Rules**: Custom rules in `proguard-rules.pro` to preserve necessary classes
+
+See `R8_CONFIGURATION_GUIDE.md` for full documentation on:
+- Permission audit and Google Play compliance
+- Blocked permissions list
+- ProGuard troubleshooting
+
 ## App Structure
 
 ```
