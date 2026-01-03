@@ -419,21 +419,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 {notebook.backgroundImage && (
                   <Image
                     source={{ uri: notebook.backgroundImage }}
-                    className="absolute inset-0 w-full h-full"
-                    style={{ opacity: notebook.backgroundImageOpacity || 0.15 }}
+                    style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%", opacity: notebook.backgroundImageOpacity || 0.15 }}
                     resizeMode="cover"
                   />
                 )}
-                <View className="flex-1 p-6 justify-between">
-                  <View className="flex-row items-center justify-between">
+                <View style={{ flex: 1, padding: 24, justifyContent: "space-between" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                     <Ionicons name="book-outline" size={36} color="#FFFFFF" />
-                    <View className="flex-row gap-2">
+                    <View style={{ flexDirection: "row", gap: 8 }}>
                       <Pressable
                         onPress={(e) => {
                           e.stopPropagation();
                           handleColorPress(notebook.id, notebook.color);
                         }}
-                        className="bg-white/20 p-2 rounded-full active:opacity-70"
+                        style={{ backgroundColor: "rgba(255,255,255,0.2)", padding: 8, borderRadius: 20 }}
                       >
                         <Ionicons name="color-palette-outline" size={20} color="#FFFFFF" />
                       </Pressable>
@@ -442,7 +441,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                           e.stopPropagation();
                           handleImagePress(notebook.id);
                         }}
-                        className="bg-white/20 p-2 rounded-full active:opacity-70"
+                        style={{ backgroundColor: "rgba(255,255,255,0.2)", padding: 8, borderRadius: 20 }}
                       >
                         <Ionicons name="image-outline" size={20} color="#FFFFFF" />
                       </Pressable>
@@ -450,27 +449,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   </View>
                   <Pressable
                     onPress={() => handleNamePress(notebook.id, notebook.name)}
-                    className="active:opacity-70"
                   >
                     <Text
-                      className="text-xl font-bold text-white"
+                      style={{ fontSize: 20, fontWeight: "bold", color: "#FFFFFF" }}
                       numberOfLines={2}
                     >
                       {notebook.name}
                     </Text>
                   </Pressable>
-                  <Text className="text-lg text-white opacity-80">
+                  <Text style={{ fontSize: 18, color: "#FFFFFF", opacity: 0.8 }}>
                     {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
                   </Text>
                 </View>
 
                 {/* Ring binder effect */}
-                <View className="absolute left-0 top-0 bottom-0 w-9 flex-col justify-around items-center py-8">
+                <View style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 36, flexDirection: "column", justifyContent: "space-around", alignItems: "center", paddingVertical: 32 }}>
                   {[...Array(5)].map((_, i) => (
                     <View
                       key={i}
-                      className="w-5 h-5 rounded-full bg-gray-400 border-2 border-gray-300"
-                      style={{ shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
+                      style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: "#9CA3AF", borderWidth: 2, borderColor: "#D1D5DB", shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
                     />
                   ))}
                 </View>
@@ -505,21 +502,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   {notebook.backgroundImage && (
                     <Image
                       source={{ uri: notebook.backgroundImage }}
-                      className="absolute inset-0 w-full h-full"
-                      style={{ opacity: notebook.backgroundImageOpacity || 0.15 }}
+                      style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%", opacity: notebook.backgroundImageOpacity || 0.15 }}
                       resizeMode="cover"
                     />
                   )}
-                  <View className="flex-1 p-6">
-                    <View className="flex-row items-center justify-between mb-4">
+                  <View style={{ flex: 1, padding: 24 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                       <Ionicons name="book-outline" size={32} color="#FFFFFF" />
-                      <View className="flex-row gap-2">
+                      <View style={{ flexDirection: "row", gap: 8 }}>
                         <Pressable
                           onPress={(e) => {
                             e.stopPropagation();
                             handleColorPress(notebook.id, notebook.color);
                           }}
-                          className="bg-white/20 p-2 rounded-full active:opacity-70"
+                          style={{ backgroundColor: "rgba(255,255,255,0.2)", padding: 8, borderRadius: 20 }}
                         >
                           <Ionicons name="color-palette-outline" size={18} color="#FFFFFF" />
                         </Pressable>
@@ -528,7 +524,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                             e.stopPropagation();
                             handleImagePress(notebook.id);
                           }}
-                          className="bg-white/20 p-2 rounded-full active:opacity-70"
+                          style={{ backgroundColor: "rgba(255,255,255,0.2)", padding: 8, borderRadius: 20 }}
                         >
                           <Ionicons name="image-outline" size={18} color="#FFFFFF" />
                         </Pressable>
@@ -536,29 +532,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     </View>
                     <Pressable
                       onPress={() => handleNamePress(notebook.id, notebook.name)}
-                      className="active:opacity-70"
                     >
                       <Text
-                        className="text-xl font-bold text-white"
+                        style={{ fontSize: 20, fontWeight: "bold", color: "#FFFFFF" }}
                         numberOfLines={3}
                       >
                         {notebook.name}
                       </Text>
                     </Pressable>
-                    <View className="absolute bottom-6 left-6 right-6">
-                      <Text className="text-base text-white opacity-80">
+                    <View style={{ position: "absolute", bottom: 24, left: 24, right: 24 }}>
+                      <Text style={{ fontSize: 16, color: "#FFFFFF", opacity: 0.8 }}>
                         {notebook.notes.length} {notebook.notes.length === 1 ? "note" : "notes"}
                       </Text>
                     </View>
                   </View>
 
                   {/* Ring binder effect */}
-                  <View className="absolute left-0 top-0 bottom-0 w-9 flex-col justify-around items-center py-8">
+                  <View style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 36, flexDirection: "column", justifyContent: "space-around", alignItems: "center", paddingVertical: 32 }}>
                     {[...Array(5)].map((_, i) => (
                       <View
                         key={i}
-                        className="w-5 h-5 rounded-full bg-gray-400 border-2 border-gray-300"
-                        style={{ shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
+                        style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: "#9CA3AF", borderWidth: 2, borderColor: "#D1D5DB", shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 1, height: 1 } }}
                       />
                     ))}
                   </View>
