@@ -77,34 +77,38 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-white">
-        <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
-          <Text className="text-2xl font-bold text-gray-900">
+      <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: "#E5E7EB" }}>
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}>
             {notebookId ? "Edit Notebook" : "New Notebook"}
           </Text>
-          <Pressable onPress={onClose} className="p-2 active:opacity-70">
+          <Pressable onPress={onClose} style={{ padding: 8 }}>
             <Ionicons name="close" size={24} color="#374151" />
           </Pressable>
         </View>
 
-        <ScrollView className="flex-1 px-6 py-6" showsVerticalScrollIndicator={false}>
-          <Text className="text-base font-semibold text-gray-900 mb-3">Notebook Name</Text>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 24, paddingVertical: 24 }} showsVerticalScrollIndicator={false}>
+          <Text style={{ fontSize: 16, fontWeight: "600", color: "#111827", marginBottom: 12 }}>Notebook Name</Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder="Enter notebook name"
-            className="bg-gray-100 rounded-xl px-4 py-4 text-base text-gray-900 mb-8"
+            style={{ backgroundColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 16, fontSize: 16, color: "#111827", marginBottom: 32 }}
             placeholderTextColor="#9CA3AF"
           />
 
-          <Text className="text-base font-semibold text-gray-900 mb-3">Cover Color</Text>
-          <View className="flex-row flex-wrap mb-8">
+          <Text style={{ fontSize: 16, fontWeight: "600", color: "#111827", marginBottom: 12 }}>Cover Color</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 32 }}>
             {CRAYON_COLORS.map((color, index) => (
               <Pressable
                 key={`cover-${index}-${color.hex}`}
                 onPress={() => setSelectedColor(color.hex)}
-                className="w-12 h-12 rounded-full mr-3 mb-3 active:opacity-70"
                 style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  marginRight: 12,
+                  marginBottom: 12,
                   backgroundColor: color.hex,
                   borderWidth: selectedColor === color.hex ? 4 : 0,
                   borderColor: "#374151",
@@ -113,14 +117,18 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
             ))}
           </View>
 
-          <Text className="text-base font-semibold text-gray-900 mb-3">Text Color</Text>
-          <View className="flex-row flex-wrap mb-8">
+          <Text style={{ fontSize: 16, fontWeight: "600", color: "#111827", marginBottom: 12 }}>Text Color</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 32 }}>
             {CRAYON_COLORS.map((color, index) => (
               <Pressable
                 key={`text-${index}-${color.hex}`}
                 onPress={() => setSelectedTextColor(color.hex)}
-                className="w-12 h-12 rounded-full mr-3 mb-3 active:opacity-70"
                 style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  marginRight: 12,
+                  marginBottom: 12,
                   backgroundColor: color.hex,
                   borderWidth: selectedTextColor === color.hex ? 4 : 0,
                   borderColor: "#374151",
@@ -129,14 +137,18 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
             ))}
           </View>
 
-          <Text className="text-base font-semibold text-gray-900 mb-3">Background Color</Text>
-          <View className="flex-row flex-wrap mb-8">
+          <Text style={{ fontSize: 16, fontWeight: "600", color: "#111827", marginBottom: 12 }}>Background Color</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 32 }}>
             {[...BACKGROUND_COLORS, ...CRAYON_COLORS].map((color, index) => (
               <Pressable
                 key={`bg-${index}-${color.hex}`}
                 onPress={() => setSelectedBgColor(color.hex)}
-                className="w-12 h-12 rounded-full mr-3 mb-3 active:opacity-70"
                 style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  marginRight: 12,
+                  marginBottom: 12,
                   backgroundColor: color.hex,
                   borderWidth: selectedBgColor === color.hex ? 4 : 0,
                   borderColor: "#374151",
@@ -148,10 +160,9 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
           <Pressable
             onPress={handleSave}
             disabled={!name.trim()}
-            className="bg-blue-600 rounded-xl py-4 items-center mb-4 active:opacity-70"
-            style={{ opacity: !name.trim() ? 0.5 : 1 }}
+            style={{ backgroundColor: "#2563EB", borderRadius: 12, paddingVertical: 16, alignItems: "center", marginBottom: 16, opacity: !name.trim() ? 0.5 : 1 }}
           >
-            <Text className="text-white text-lg font-bold">
+            <Text style={{ color: "#FFFFFF", fontSize: 18, fontWeight: "bold" }}>
               {notebookId ? "Save Changes" : "Create Notebook"}
             </Text>
           </Pressable>
@@ -159,9 +170,9 @@ export const NotebookModal: React.FC<NotebookModalProps> = ({
           {notebookId && (
             <Pressable
               onPress={handleDelete}
-              className="bg-red-600 rounded-xl py-4 items-center mb-4 active:opacity-70"
+              style={{ backgroundColor: "#DC2626", borderRadius: 12, paddingVertical: 16, alignItems: "center", marginBottom: 16 }}
             >
-              <Text className="text-white text-lg font-bold">Delete Notebook</Text>
+              <Text style={{ color: "#FFFFFF", fontSize: 18, fontWeight: "bold" }}>Delete Notebook</Text>
             </Pressable>
           )}
         </ScrollView>

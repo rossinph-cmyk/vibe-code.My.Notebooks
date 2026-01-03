@@ -284,30 +284,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView
-      className="flex-1"
+      style={{ flex: 1, backgroundColor: darkMode ? "#000000" : "#FEF3C7" }}
       edges={["top", "bottom"]}
-      style={{ backgroundColor: darkMode ? "#000000" : "#FEF3C7" }}
     >
       {/* Home Background Image */}
       {homeBackgroundImage && (
         <Image
           source={{ uri: homeBackgroundImage }}
-          className="absolute inset-0 w-full h-full"
-          style={{ opacity: homeBackgroundImageOpacity || 0.15 }}
+          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%", opacity: homeBackgroundImageOpacity || 0.15 }}
           resizeMode="cover"
         />
       )}
-      <View className="flex-1 px-6 pt-8">
+      <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 32 }}>
         {/* Header with title and controls */}
-        <View className="flex-row items-center justify-between mb-2">
-          <View className="flex-1 flex-row items-center">
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
             <Text
-              className="text-4xl font-bold"
-              style={{ color: darkMode ? "#A855F7" : "#78350F" }}
+              style={{ fontSize: 36, fontWeight: "bold", color: darkMode ? "#A855F7" : "#78350F" }}
             >
               My Notebooks
             </Text>
-            <View className="ml-3 p-2 rounded-full" style={{ backgroundColor: darkMode ? "#A855F7" : "#78350F" }}>
+            <View style={{ marginLeft: 12, padding: 8, borderRadius: 20, backgroundColor: darkMode ? "#A855F7" : "#78350F" }}>
               <Ionicons
                 name="mic"
                 size={24}
@@ -315,7 +312,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               />
             </View>
           </View>
-          <View className="flex-row gap-2">
+          <View style={{ flexDirection: "row", gap: 8 }}>
             <Pressable
               onPress={() => {
                 Alert.alert(
@@ -337,8 +334,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   ]
                 );
               }}
-              className="p-2 rounded-full active:opacity-70"
-              style={{ backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
+              style={{ padding: 8, borderRadius: 20, backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
             >
               <Ionicons
                 name="refresh"
@@ -351,8 +347,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 setShowFeaturesSlideshow(true);
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }}
-              className="p-2 rounded-full active:opacity-70"
-              style={{ backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
+              style={{ padding: 8, borderRadius: 20, backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
             >
               <Ionicons
                 name="help-circle-outline"
@@ -362,8 +357,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </Pressable>
             <Pressable
               onPress={handleHomeImagePress}
-              className="p-2 rounded-full active:opacity-70"
-              style={{ backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
+              style={{ padding: 8, borderRadius: 20, backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
             >
               <Ionicons
                 name="image-outline"
@@ -373,8 +367,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </Pressable>
             <Pressable
               onPress={toggleDarkMode}
-              className="p-2 rounded-full active:opacity-70"
-              style={{ backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
+              style={{ padding: 8, borderRadius: 20, backgroundColor: darkMode ? "#1F1F1F" : "#FDE68A" }}
             >
               <Ionicons
                 name={darkMode ? "sunny" : "moon"}
@@ -385,8 +378,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         </View>
         <Text
-          className="text-base mb-8"
-          style={{ color: darkMode ? "#A855F7" : "#92400E" }}
+          style={{ fontSize: 16, marginBottom: 32, color: darkMode ? "#A855F7" : "#92400E" }}
         >
           Tap to open or create a new notebook
         </Text>
@@ -620,37 +612,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         onRequestClose={handleNameCancel}
       >
         <Pressable
-          className="flex-1 bg-black/50 justify-center items-center px-8"
+          style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center", paddingHorizontal: 32 }}
           onPress={handleNameCancel}
         >
           <Pressable
-            className="w-full bg-white rounded-2xl p-6"
+            style={{ width: "100%", backgroundColor: "#FFFFFF", borderRadius: 16, padding: 24 }}
             onPress={(e) => e.stopPropagation()}
           >
-            <Text className="text-xl font-bold text-gray-900 mb-4">Edit Notebook Name</Text>
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: "#111827", marginBottom: 16 }}>Edit Notebook Name</Text>
             <TextInput
               value={editingNameValue}
               onChangeText={setEditingNameValue}
               placeholder="Enter notebook name"
-              className="bg-gray-100 rounded-xl px-4 py-4 text-base text-gray-900 mb-4"
+              style={{ backgroundColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 16, fontSize: 16, color: "#111827", marginBottom: 16 }}
               placeholderTextColor="#9CA3AF"
               autoFocus
               onSubmitEditing={handleNameSave}
             />
-            <View className="flex-row gap-3">
+            <View style={{ flexDirection: "row", gap: 12 }}>
               <Pressable
                 onPress={handleNameCancel}
-                className="flex-1 bg-gray-200 rounded-xl py-3 items-center active:opacity-70"
+                style={{ flex: 1, backgroundColor: "#E5E7EB", borderRadius: 12, paddingVertical: 12, alignItems: "center" }}
               >
-                <Text className="text-gray-900 text-base font-semibold">Cancel</Text>
+                <Text style={{ color: "#111827", fontSize: 16, fontWeight: "600" }}>Cancel</Text>
               </Pressable>
               <Pressable
                 onPress={handleNameSave}
                 disabled={!editingNameValue.trim()}
-                className="flex-1 bg-blue-600 rounded-xl py-3 items-center active:opacity-70"
-                style={{ opacity: !editingNameValue.trim() ? 0.5 : 1 }}
+                style={{ flex: 1, backgroundColor: "#2563EB", borderRadius: 12, paddingVertical: 12, alignItems: "center", opacity: !editingNameValue.trim() ? 0.5 : 1 }}
               >
-                <Text className="text-white text-base font-semibold">Save</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "600" }}>Save</Text>
               </Pressable>
             </View>
           </Pressable>
@@ -664,32 +655,33 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         transparent
         onRequestClose={handleCloseColorPicker}
       >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-white rounded-t-3xl p-6 pb-10">
-            <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-2xl font-bold text-gray-900">Color Change</Text>
-              <Pressable
-                onPress={handleCloseColorPicker}
-                className="active:opacity-70"
-              >
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
+          <View style={{ backgroundColor: "#FFFFFF", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}>Color Change</Text>
+              <Pressable onPress={handleCloseColorPicker}>
                 <Ionicons name="close" size={28} color="#374151" />
               </Pressable>
             </View>
 
-            <Text className="text-base font-semibold text-gray-700 mb-4">
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "#374151", marginBottom: 16 }}>
               Select Notebook Color
             </Text>
 
             {/* Original Color Option */}
-            <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-700 mb-2">Original Color</Text>
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontSize: 14, fontWeight: "600", color: "#374151", marginBottom: 8 }}>Original Color</Text>
               <Pressable
                 onPress={() => {
                   setSelectedColor(originalColor);
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 }}
-                className="h-16 rounded-2xl items-center justify-center border-2"
                 style={{
+                  height: 64,
+                  borderRadius: 16,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 2,
                   backgroundColor: originalColor,
                   borderColor: selectedColor === originalColor ? "#3B82F6" : "#E5E7EB"
                 }}
@@ -699,7 +691,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </View>
 
             {/* Rainbow Gradient Slider */}
-            <View className="mb-6 items-center">
+            <View style={{ marginBottom: 24, alignItems: "center" }}>
               <View
                 {...panResponder.panHandlers}
                 style={{ width: sliderWidth, height: 60, borderRadius: 16, overflow: "hidden", marginBottom: 16 }}
@@ -730,11 +722,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </View>
 
             {/* Color Preview */}
-            <View className="mb-6">
-              <Text className="text-sm font-semibold text-gray-700 mb-2">Preview</Text>
+            <View style={{ marginBottom: 24 }}>
+              <Text style={{ fontSize: 14, fontWeight: "600", color: "#374151", marginBottom: 8 }}>Preview</Text>
               <View
-                className="h-24 rounded-2xl items-center justify-center"
-                style={{ backgroundColor: selectedColor }}
+                style={{ height: 96, borderRadius: 16, alignItems: "center", justifyContent: "center", backgroundColor: selectedColor }}
               >
                 <Ionicons name="book-outline" size={48} color="#FFFFFF" />
               </View>
@@ -743,9 +734,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             {/* Save Button */}
             <Pressable
               onPress={handleSaveColor}
-              className="bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+              style={{ backgroundColor: "#2563EB", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
             >
-              <Text className="text-white text-lg font-bold">Save Color</Text>
+              <Text style={{ color: "#FFFFFF", fontSize: 18, fontWeight: "bold" }}>Save Color</Text>
             </Pressable>
           </View>
         </View>
@@ -758,43 +749,39 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         transparent
         onRequestClose={handleCloseImagePicker}
       >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-white rounded-t-3xl p-6 pb-10">
-            <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-2xl font-bold text-gray-900">Notebook Background</Text>
-              <Pressable
-                onPress={handleCloseImagePicker}
-                className="active:opacity-70"
-              >
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
+          <View style={{ backgroundColor: "#FFFFFF", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}>Notebook Background</Text>
+              <Pressable onPress={handleCloseImagePicker}>
                 <Ionicons name="close" size={28} color="#374151" />
               </Pressable>
             </View>
 
-            <Text className="text-base font-semibold text-gray-700 mb-4">
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "#374151", marginBottom: 16 }}>
               Choose an image or color for your notebook
             </Text>
 
             {/* Image Preview */}
             {selectedImageUri ? (
-              <View className="mb-6">
-                <Text className="text-sm font-semibold text-gray-700 mb-2">Selected Image</Text>
-                <View className="h-48 rounded-2xl overflow-hidden border-2 border-gray-200 mb-4">
-                  <View className="flex-1" style={{ backgroundColor: editingImageId ? notebooks.find((nb) => nb.id === editingImageId)?.color : "#E63946" }}>
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#374151", marginBottom: 8 }}>Selected Image</Text>
+                <View style={{ height: 192, borderRadius: 16, overflow: "hidden", borderWidth: 2, borderColor: "#E5E7EB", marginBottom: 16 }}>
+                  <View style={{ flex: 1, backgroundColor: editingImageId ? notebooks.find((nb) => nb.id === editingImageId)?.color : "#E63946" }}>
                     <Image
                       source={{ uri: selectedImageUri }}
-                      className="w-full h-full"
-                      style={{ opacity: imageOpacity }}
+                      style={{ width: "100%", height: "100%", opacity: imageOpacity }}
                       resizeMode="cover"
                     />
                   </View>
                 </View>
 
                 {/* Transparency Slider */}
-                <View className="mb-4">
-                  <Text className="text-sm font-semibold text-gray-700 mb-2">
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: "#374151", marginBottom: 8 }}>
                     Transparency: {Math.round(imageOpacity * 100)}%
                   </Text>
-                  <View className="bg-gray-200 h-12 rounded-xl justify-center px-2">
+                  <View style={{ backgroundColor: "#E5E7EB", height: 48, borderRadius: 12, justifyContent: "center", paddingHorizontal: 8 }}>
                     <View
                       {...PanResponder.create({
                         onStartShouldSetPanResponder: () => true,
@@ -815,7 +802,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                       }).panHandlers}
                       style={{ width: sliderWidth, height: 48, justifyContent: "center" }}
                     >
-                      <View className="bg-gray-300 h-2 rounded-full" />
+                      <View style={{ backgroundColor: "#D1D5DB", height: 8, borderRadius: 4 }} />
                       <View
                         style={{
                           position: "absolute",
@@ -839,19 +826,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 {/* Remove Image Button */}
                 <Pressable
                   onPress={handleRemoveImage}
-                  className="bg-red-100 rounded-xl py-3 items-center active:opacity-70 mb-3"
+                  style={{ backgroundColor: "#FEE2E2", borderRadius: 12, paddingVertical: 12, alignItems: "center", marginBottom: 12 }}
                 >
-                  <Text className="text-red-600 text-base font-semibold">Remove Image</Text>
+                  <Text style={{ color: "#DC2626", fontSize: 16, fontWeight: "600" }}>Remove Image</Text>
                 </Pressable>
               </View>
             ) : (
-              <View className="mb-6">
+              <View style={{ marginBottom: 24 }}>
                 <Pressable
                   onPress={handlePickImage}
-                  className="h-48 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 items-center justify-center active:opacity-70"
+                  style={{ height: 192, borderRadius: 16, borderWidth: 2, borderStyle: "dashed", borderColor: "#D1D5DB", backgroundColor: "#F9FAFB", alignItems: "center", justifyContent: "center" }}
                 >
                   <Ionicons name="image-outline" size={64} color="#9CA3AF" />
-                  <Text className="text-gray-600 text-base font-semibold mt-4">
+                  <Text style={{ color: "#4B5563", fontSize: 16, fontWeight: "600", marginTop: 16 }}>
                     Select an Image
                   </Text>
                 </Pressable>
@@ -859,20 +846,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             )}
 
             {/* Buttons */}
-            <View className="flex-row gap-3">
+            <View style={{ flexDirection: "row", gap: 12 }}>
               {selectedImageUri && (
                 <Pressable
                   onPress={handlePickImage}
-                  className="flex-1 bg-gray-200 rounded-xl py-4 items-center active:opacity-70"
+                  style={{ flex: 1, backgroundColor: "#E5E7EB", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
                 >
-                  <Text className="text-gray-900 text-base font-semibold">Change Image</Text>
+                  <Text style={{ color: "#111827", fontSize: 16, fontWeight: "600" }}>Change Image</Text>
                 </Pressable>
               )}
               <Pressable
                 onPress={handleSaveImage}
-                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+                style={{ flex: 1, backgroundColor: "#2563EB", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
               >
-                <Text className="text-white text-base font-bold">Save</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "bold" }}>Save</Text>
               </Pressable>
             </View>
           </View>
@@ -886,43 +873,39 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         transparent
         onRequestClose={handleCloseHomeImagePicker}
       >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-white rounded-t-3xl p-6 pb-10">
-            <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-2xl font-bold text-gray-900">Home Background</Text>
-              <Pressable
-                onPress={handleCloseHomeImagePicker}
-                className="active:opacity-70"
-              >
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
+          <View style={{ backgroundColor: "#FFFFFF", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}>Home Background</Text>
+              <Pressable onPress={handleCloseHomeImagePicker}>
                 <Ionicons name="close" size={28} color="#374151" />
               </Pressable>
             </View>
 
-            <Text className="text-base font-semibold text-gray-700 mb-4">
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "#374151", marginBottom: 16 }}>
               Choose a background image for your home screen
             </Text>
 
             {/* Image Preview */}
             {selectedHomeImageUri ? (
-              <View className="mb-6">
-                <Text className="text-sm font-semibold text-gray-700 mb-2">Selected Image</Text>
-                <View className="h-48 rounded-2xl overflow-hidden border-2 border-gray-200 mb-4">
-                  <View className="flex-1" style={{ backgroundColor: darkMode ? "#000000" : "#FEF3C7" }}>
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#374151", marginBottom: 8 }}>Selected Image</Text>
+                <View style={{ height: 192, borderRadius: 16, overflow: "hidden", borderWidth: 2, borderColor: "#E5E7EB", marginBottom: 16 }}>
+                  <View style={{ flex: 1, backgroundColor: darkMode ? "#000000" : "#FEF3C7" }}>
                     <Image
                       source={{ uri: selectedHomeImageUri }}
-                      className="w-full h-full"
-                      style={{ opacity: homeImageOpacity }}
+                      style={{ width: "100%", height: "100%", opacity: homeImageOpacity }}
                       resizeMode="cover"
                     />
                   </View>
                 </View>
 
                 {/* Transparency Slider */}
-                <View className="mb-4">
-                  <Text className="text-sm font-semibold text-gray-700 mb-2">
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: "#374151", marginBottom: 8 }}>
                     Transparency: {Math.round(homeImageOpacity * 100)}%
                   </Text>
-                  <View className="bg-gray-200 h-12 rounded-xl justify-center px-2">
+                  <View style={{ backgroundColor: "#E5E7EB", height: 48, borderRadius: 12, justifyContent: "center", paddingHorizontal: 8 }}>
                     <View
                       {...PanResponder.create({
                         onStartShouldSetPanResponder: () => true,
@@ -943,7 +926,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                       }).panHandlers}
                       style={{ width: sliderWidth, height: 48, justifyContent: "center" }}
                     >
-                      <View className="bg-gray-300 h-2 rounded-full" />
+                      <View style={{ backgroundColor: "#D1D5DB", height: 8, borderRadius: 4 }} />
                       <View
                         style={{
                           position: "absolute",
@@ -967,19 +950,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 {/* Remove Image Button */}
                 <Pressable
                   onPress={handleRemoveHomeImage}
-                  className="bg-red-100 rounded-xl py-3 items-center active:opacity-70 mb-3"
+                  style={{ backgroundColor: "#FEE2E2", borderRadius: 12, paddingVertical: 12, alignItems: "center", marginBottom: 12 }}
                 >
-                  <Text className="text-red-600 text-base font-semibold">Remove Image</Text>
+                  <Text style={{ color: "#DC2626", fontSize: 16, fontWeight: "600" }}>Remove Image</Text>
                 </Pressable>
               </View>
             ) : (
-              <View className="mb-6">
+              <View style={{ marginBottom: 24 }}>
                 <Pressable
                   onPress={handlePickHomeImage}
-                  className="h-48 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 items-center justify-center active:opacity-70"
+                  style={{ height: 192, borderRadius: 16, borderWidth: 2, borderStyle: "dashed", borderColor: "#D1D5DB", backgroundColor: "#F9FAFB", alignItems: "center", justifyContent: "center" }}
                 >
                   <Ionicons name="image-outline" size={64} color="#9CA3AF" />
-                  <Text className="text-gray-600 text-base font-semibold mt-4">
+                  <Text style={{ color: "#4B5563", fontSize: 16, fontWeight: "600", marginTop: 16 }}>
                     Select an Image
                   </Text>
                 </Pressable>
@@ -987,20 +970,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             )}
 
             {/* Buttons */}
-            <View className="flex-row gap-3">
+            <View style={{ flexDirection: "row", gap: 12 }}>
               {selectedHomeImageUri && (
                 <Pressable
                   onPress={handlePickHomeImage}
-                  className="flex-1 bg-gray-200 rounded-xl py-4 items-center active:opacity-70"
+                  style={{ flex: 1, backgroundColor: "#E5E7EB", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
                 >
-                  <Text className="text-gray-900 text-base font-semibold">Change Image</Text>
+                  <Text style={{ color: "#111827", fontSize: 16, fontWeight: "600" }}>Change Image</Text>
                 </Pressable>
               )}
               <Pressable
                 onPress={handleSaveHomeImage}
-                className="flex-1 bg-blue-600 rounded-xl py-4 items-center active:opacity-70"
+                style={{ flex: 1, backgroundColor: "#2563EB", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
               >
-                <Text className="text-white text-base font-bold">Save</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "bold" }}>Save</Text>
               </Pressable>
             </View>
           </View>

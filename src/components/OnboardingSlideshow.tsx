@@ -172,7 +172,7 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
       transparent={false}
       onRequestClose={handleComplete}
     >
-      <View className="flex-1 bg-gray-900">
+      <View style={{ flex: 1, backgroundColor: "#111827" }}>
         <ScrollView
           ref={scrollViewRef}
           horizontal
@@ -184,15 +184,13 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
           {SLIDES.map((slide, index) => (
             <View
               key={slide.id}
-              style={{ width: SCREEN_WIDTH }}
-              className="flex-1"
+              style={{ width: SCREEN_WIDTH, flex: 1 }}
             >
-              <View className="flex-1">
+              <View style={{ flex: 1 }}>
                 {/* Background Image Layer */}
                 <Image
                   source={slide.image}
-                  className="absolute inset-0 w-full h-full"
-                  style={{ opacity: 0.25 }}
+                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%", opacity: 0.25 }}
                   resizeMode="cover"
                 />
 
@@ -204,9 +202,9 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
                   style={{ flex: 1 }}
                 >
                   {/* Title Section */}
-                  <View className="h-64 items-center justify-center px-6">
-                    <View className="bg-white/20 backdrop-blur-lg rounded-3xl p-6">
-                      <Text className="text-4xl font-bold text-white text-center">
+                  <View style={{ height: 256, alignItems: "center", justifyContent: "center", paddingHorizontal: 24 }}>
+                    <View style={{ backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 24, padding: 24 }}>
+                      <Text style={{ fontSize: 36, fontWeight: "bold", color: "#FFFFFF", textAlign: "center" }}>
                         {slide.title}
                       </Text>
                     </View>
@@ -214,31 +212,31 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
 
                 {/* Features List */}
                 <ScrollView
-                  className="flex-1 px-6 pt-8"
+                  style={{ flex: 1, paddingHorizontal: 24, paddingTop: 32 }}
                   showsVerticalScrollIndicator={false}
                 >
                   {slide.features.map((feature, idx) => (
                     <View
                       key={idx}
-                      className="bg-white/10 backdrop-blur-md rounded-2xl p-5 mb-4 flex-row"
+                      style={{ backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 16, padding: 20, marginBottom: 16, flexDirection: "row" }}
                     >
-                      <View className="mr-4">
-                        <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center">
+                      <View style={{ marginRight: 16 }}>
+                        <View style={{ width: 48, height: 48, backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 24, alignItems: "center", justifyContent: "center" }}>
                           <Ionicons name={feature.icon as any} size={24} color="#FFFFFF" />
                         </View>
                       </View>
-                      <View className="flex-1">
-                        <Text className="text-xl font-bold text-white mb-2">
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 20, fontWeight: "bold", color: "#FFFFFF", marginBottom: 8 }}>
                           {feature.title}
                         </Text>
-                        <Text className="text-base text-white/80 leading-6">
+                        <Text style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", lineHeight: 24 }}>
                           {feature.description}
                         </Text>
                       </View>
                     </View>
                   ))}
 
-                  <View className="h-32" />
+                  <View style={{ height: 128 }} />
                 </ScrollView>
               </LinearGradient>
               </View>
@@ -247,45 +245,46 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
         </ScrollView>
 
         {/* Bottom Navigation */}
-        <View className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-lg p-6">
+        <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.3)", padding: 24 }}>
           {/* Pagination Dots */}
-          <View className="flex-row justify-center mb-6">
+          <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 24 }}>
             {SLIDES.map((_, index) => (
               <View
                 key={index}
-                className="mx-2 rounded-full"
                 style={{
+                  marginHorizontal: 8,
+                  borderRadius: 4,
                   width: currentSlide === index ? 32 : 8,
                   height: 8,
-                  backgroundColor: currentSlide === index ? "#FFFFFF" : "#FFFFFF40",
+                  backgroundColor: currentSlide === index ? "#FFFFFF" : "rgba(255,255,255,0.25)",
                 }}
               />
             ))}
           </View>
 
           {/* Buttons */}
-          <View className="flex-row gap-3">
+          <View style={{ flexDirection: "row", gap: 12 }}>
             {currentSlide < SLIDES.length - 1 ? (
               <>
                 <Pressable
                   onPress={handleSkip}
-                  className="flex-1 bg-white/20 rounded-xl py-4 items-center active:opacity-70"
+                  style={{ flex: 1, backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
                 >
-                  <Text className="text-white text-base font-semibold">Skip</Text>
+                  <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "600" }}>Skip</Text>
                 </Pressable>
                 <Pressable
                   onPress={handleNext}
-                  className="flex-1 bg-white rounded-xl py-4 items-center active:opacity-70"
+                  style={{ flex: 1, backgroundColor: "#FFFFFF", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
                 >
-                  <Text className="text-gray-900 text-base font-bold">Next</Text>
+                  <Text style={{ color: "#111827", fontSize: 16, fontWeight: "bold" }}>Next</Text>
                 </Pressable>
               </>
             ) : (
               <Pressable
                 onPress={handleComplete}
-                className="flex-1 bg-white rounded-xl py-4 items-center active:opacity-70"
+                style={{ flex: 1, backgroundColor: "#FFFFFF", borderRadius: 12, paddingVertical: 16, alignItems: "center" }}
               >
-                <Text className="text-gray-900 text-base font-bold">Get Started</Text>
+                <Text style={{ color: "#111827", fontSize: 16, fontWeight: "bold" }}>Get Started</Text>
               </Pressable>
             )}
           </View>
