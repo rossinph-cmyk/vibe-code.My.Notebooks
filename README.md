@@ -126,24 +126,47 @@ This allows you to personalize your home screen with photos, patterns, or artwor
 
 ## Technical Details
 
-- Built with Expo SDK 53 and React Native 0.76.7
+- Built with Expo SDK 53 and React Native 0.79.2
 - Uses OpenAI's gpt-4o-transcribe for voice-to-text
 - State management with Zustand + AsyncStorage for persistence
 - Native iOS design following Apple Human Interface Guidelines
 - Haptic feedback for enhanced user experience
 
-## Android Build Configuration
+## Android APK Build (Windows)
 
-The app is configured with R8/ProGuard optimization for release builds:
+### Prerequisites
+- OpenJDK 17 (Eclipse Adoptium/Temurin recommended)
+- Node.js with npm
 
-- **R8 Code Shrinking**: Enabled to remove unused code and reduce APK size
-- **Resource Shrinking**: Removes unused resources from the final build
-- **ProGuard Rules**: Custom rules in `proguard-rules.pro` to preserve necessary classes
+### Quick Build Steps
 
-See `R8_CONFIGURATION_GUIDE.md` for full documentation on:
-- Permission audit and Google Play compliance
-- Blocked permissions list
-- ProGuard troubleshooting
+1. **Set JAVA_HOME** (run before every build):
+   ```powershell
+   $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.13.11-hotspot"
+   ```
+
+2. **Copy to short path** (avoids Windows 260-char limit):
+   ```powershell
+   xcopy "C:\path\to\project" "C:\vibe-notebooks\" /E /I /H /Y
+   ```
+
+3. **Build APK**:
+   ```powershell
+   cd C:\vibe-notebooks
+   .\android\gradlew.bat -p android assembleRelease
+   ```
+
+4. **Find APK at**: `C:\vibe-notebooks\android\app\build\outputs\apk\release\app-release.apk`
+
+### One-Line Build Command
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.13.11-hotspot"; xcopy "C:\path\to\project" "C:\vibe-notebooks\" /E /I /H /Y /Q; cd C:\vibe-notebooks; .\android\gradlew.bat -p android assembleRelease
+```
+
+### Troubleshooting
+- **JAVA_HOME error**: Ensure JDK 17 is installed and path is correct
+- **Filename too long**: Always build from `C:\vibe-notebooks\`
+- **Icon not appearing**: Remove `.webp` files from `android/app/src/main/res/mipmap-*` folders
 
 ## App Structure
 
