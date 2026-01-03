@@ -167,6 +167,7 @@ $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.13.11-hotspot"; xco
 - **JAVA_HOME error**: Ensure JDK 17 is installed and path is correct
 - **Filename too long**: Always build from `C:\vibe-notebooks\`
 - **Icon not appearing**: Remove `.webp` files from `android/app/src/main/res/mipmap-*` folders
+- **Layout issues on Android**: All layout-critical styles use inline `style` props instead of NativeWind `className` for APK compatibility
 
 ## App Structure
 
