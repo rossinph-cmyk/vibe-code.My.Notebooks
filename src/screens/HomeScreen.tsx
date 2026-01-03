@@ -396,15 +396,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           {/* Two notebooks displayed horizontally */}
-          <View className="flex-row justify-between mb-8">
+          <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 32 }}>
             {notebooks.slice(0, 2).map((notebook) => (
               <Pressable
                 key={notebook.id}
                 onPress={() => handleNotebookPress(notebook.id)}
                 onLongPress={() => handleEditNotebook(notebook.id)}
-                className="w-[48%] aspect-[1/1.6] rounded-2xl shadow-lg overflow-hidden active:opacity-70"
                 style={{
+                  width: "48%",
+                  aspectRatio: 1 / 1.6,
+                  borderRadius: 16,
+                  overflow: "hidden",
                   backgroundColor: notebook.color,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: 5,
                 }}
               >
                 {/* Background Image */}
@@ -472,16 +480,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
           {/* Additional notebooks in grid layout */}
           {notebooks.length > 2 && (
-            <View className="flex-row flex-wrap">
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {notebooks.slice(2).map((notebook, index) => (
                 <Pressable
                   key={notebook.id}
                   onPress={() => handleNotebookPress(notebook.id)}
                   onLongPress={() => handleEditNotebook(notebook.id)}
-                  className="w-[48%] aspect-[1/1.6] mb-6 rounded-2xl shadow-lg overflow-hidden active:opacity-70"
                   style={{
+                    width: "48%",
+                    aspectRatio: 1 / 1.6,
+                    marginBottom: 24,
+                    borderRadius: 16,
+                    overflow: "hidden",
                     backgroundColor: notebook.color,
                     marginRight: index % 2 === 0 ? "4%" : 0,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 5,
                   }}
                 >
                   {/* Background Image */}
@@ -551,26 +568,44 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               {/* Add new notebook button in grid */}
               <Pressable
                 onPress={handleAddNotebook}
-                className="w-[48%] aspect-[1/1.6] rounded-2xl border-4 border-dashed border-amber-300 bg-amber-100 items-center justify-center active:opacity-70"
                 style={{
+                  width: "48%",
+                  aspectRatio: 1 / 1.6,
+                  borderRadius: 16,
+                  borderWidth: 4,
+                  borderStyle: "dashed",
+                  borderColor: "#FCD34D",
+                  backgroundColor: "#FEF3C7",
+                  alignItems: "center",
+                  justifyContent: "center",
                   marginRight: notebooks.slice(2).length % 2 === 0 ? "4%" : 0,
                 }}
               >
                 <Ionicons name="add" size={48} color="#D97706" />
-                <Text className="text-xl font-semibold text-amber-900 mt-2">New Notebook</Text>
+                <Text style={{ fontSize: 20, fontWeight: "600", color: "#78350F", marginTop: 8 }}>New Notebook</Text>
               </Pressable>
             </View>
           )}
 
           {/* Add new notebook button for initial layout */}
           {notebooks.length <= 2 && notebooks.length % 2 === 0 && (
-            <View className="flex-row justify-between">
+            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
               <Pressable
                 onPress={handleAddNotebook}
-                className="w-[48%] aspect-[1/1.6] rounded-2xl border-4 border-dashed border-amber-300 bg-amber-100 items-center justify-center active:opacity-70"
+                style={{
+                  width: "48%",
+                  aspectRatio: 1 / 1.6,
+                  borderRadius: 16,
+                  borderWidth: 4,
+                  borderStyle: "dashed",
+                  borderColor: "#FCD34D",
+                  backgroundColor: "#FEF3C7",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
                 <Ionicons name="add" size={48} color="#D97706" />
-                <Text className="text-xl font-semibold text-amber-900 mt-2">New Notebook</Text>
+                <Text style={{ fontSize: 20, fontWeight: "600", color: "#78350F", marginTop: 8 }}>New Notebook</Text>
               </Pressable>
             </View>
           )}
