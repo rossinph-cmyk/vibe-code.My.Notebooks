@@ -758,20 +758,32 @@ export const NotebookScreen: React.FC<NotebookScreenProps> = ({ navigation, rout
                       placeholderTextColor={iconColor + "80"}
                       placeholder="Type your note here..."
                     />
-                    <View className="flex-row gap-3 mb-4">
+                    <View style={{ flexDirection: "row", gap: 12, marginBottom: 16 }}>
                       <Pressable
                         onPress={handleCancelEdit}
-                        className="flex-1 bg-gray-500/50 rounded-lg py-2 items-center active:opacity-70"
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(107, 114, 128, 0.5)",
+                          borderRadius: 8,
+                          paddingVertical: 8,
+                          alignItems: "center",
+                        }}
                       >
-                        <Text className="text-white text-sm font-semibold">Cancel</Text>
+                        <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "600" }}>Cancel</Text>
                       </Pressable>
                       <Pressable
                         onPress={handleSaveNote}
                         disabled={!editingNoteText.trim()}
-                        className="flex-1 bg-blue-600 rounded-lg py-2 items-center active:opacity-70"
-                        style={{ opacity: !editingNoteText.trim() ? 0.5 : 1 }}
+                        style={{
+                          flex: 1,
+                          backgroundColor: "#2563EB",
+                          borderRadius: 8,
+                          paddingVertical: 8,
+                          alignItems: "center",
+                          opacity: !editingNoteText.trim() ? 0.5 : 1,
+                        }}
                       >
-                        <Text className="text-white text-sm font-semibold">Save</Text>
+                        <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "600" }}>Save</Text>
                       </Pressable>
                     </View>
                   </View>
