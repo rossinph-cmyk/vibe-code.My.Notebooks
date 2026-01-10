@@ -133,42 +133,111 @@ This allows you to personalize your home screen with photos, patterns, or artwor
 - Haptic feedback for enhanced user experience
 - All layout styles use inline React Native StyleSheet (not NativeWind className) for cross-platform compatibility
 
-## Android APK Build (Windows)
+## Android APK Build (VS Code Local Build)
+
+This project uses Expo's managed workflow. To build an APK locally, you need to generate native Android code first.
 
 ### Prerequisites
-- OpenJDK 17 (Eclipse Adoptium/Temurin recommended)
-- Node.js with npm
 
-### Quick Build Steps
-
-1. **Set JAVA_HOME** (run before every build):
-   ```powershell
-   $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.13.11-hotspot"
+1. **Node.js** (v18+ recommended)
+2. **OpenJDK 17** (Eclipse Adoptium/Temurin recommended)
+   - Download: https://adoptium.net/
+3. **Android SDK** (via Android Studio or command line tools)
+   - Set `ANDROID_HOME` environment variable
+4. **EAS CLI** (Expo Application Services)
+   ```bash
+   npm install -g eas-cli
    ```
 
-2. **Copy to short path** (avoids Windows 260-char limit):
-   ```powershell
-   xcopy "C:\path\to\project" "C:\vibe-notebooks\" /E /I /H /Y
-   ```
+### Method 1: EAS Build (Recommended)
 
-3. **Build APK**:
-   ```powershell
-   cd C:\vibe-notebooks
-   .\android\gradlew.bat -p android assembleRelease
-   ```
+Build in the cloud without local Android SDK setup:
 
-4. **Find APK at**: `C:\vibe-notebooks\android\app\build\outputs\apk\release\app-release.apk`
+```bash
+# Login to Expo
+eas login
 
-### One-Line Build Command
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.13.11-hotspot"; xcopy "C:\path\to\project" "C:\vibe-notebooks\" /E /I /H /Y /Q; cd C:\vibe-notebooks; .\android\gradlew.bat -p android assembleRelease
+# Build APK (cloud build)
+eas build --platform android --profile preview
+
+# Or build locally (requires Android SDK)
+eas build --platform android --profile local --local
 ```
 
+### Method 2: Local Build with Prebuild (Windows)
+
+#### Step 1: Generate Native Android Project
+
+```powershell
+# Install dependencies first
+npm install
+
+# Generate android folder
+npx expo prebuild --platform android
+```
+
+#### Step 2: Set Environment Variables
+
+```powershell
+# Set JAVA_HOME (adjust path to your JDK installation)
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.13.11-hotspot"
+
+# Verify Java
+java -version
+```
+
+#### Step 3: Copy to Short Path (Windows 260-char limit workaround)
+
+```powershell
+xcopy "C:\path\to\your\project" "C:\vn\" /E /I /H /Y
+cd C:\vn
+```
+
+#### Step 4: Build the APK
+
+```powershell
+# Clean and build
+cd android
+.\gradlew.bat clean
+.\gradlew.bat assembleRelease
+```
+
+#### Step 5: Find Your APK
+
+```
+android\app\build\outputs\apk\release\app-release.apk
+```
+
+### One-Line Build Command (Windows PowerShell)
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.13.11-hotspot"; cd android; .\gradlew.bat clean; .\gradlew.bat assembleRelease
+```
+
+### Required Icon Files
+
+Before building, ensure these files exist in `/assets/`:
+- `icon.png` - 1024x1024 px (app icon)
+- `splash.png` - 1284x2778 px (splash screen)
+- `adaptive-icon.png` - 1024x1024 px (Android adaptive icon foreground)
+
 ### Troubleshooting
-- **JAVA_HOME error**: Ensure JDK 17 is installed and path is correct
-- **Filename too long**: Always build from `C:\vibe-notebooks\`
-- **Icon not appearing**: Remove `.webp` files from `android/app/src/main/res/mipmap-*` folders
-- **Layout issues on Android**: All layout-critical styles use inline `style` props instead of NativeWind `className` for APK compatibility
+
+| Issue | Solution |
+|-------|----------|
+| `JAVA_HOME not set` | Set JAVA_HOME to JDK 17 path |
+| `Filename too long` | Build from short path like `C:\vn\` |
+| `SDK location not found` | Set `ANDROID_HOME` or create `local.properties` in android folder |
+| `Icon not appearing` | Delete `.webp` files in `android/app/src/main/res/mipmap-*` folders |
+| `NativeWind className not working` | Already fixed - all layouts use inline styles |
+| `prebuild fails` | Run `npm install` first, check app.json is valid |
+
+### Build Profiles (eas.json)
+
+- `development` - Debug APK with dev client
+- `preview` - Release APK for testing
+- `production` - Release APK for store
+- `local` - Release APK built locally
 
 ## App Structure
 
