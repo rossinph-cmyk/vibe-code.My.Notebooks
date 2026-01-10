@@ -37,6 +37,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({
       transparent={false}
       onRequestClose={() => {}}
       statusBarTranslucent={false}
+      presentationStyle="fullScreen"
     >
       <SafeAreaView style={styles.container}>
         {/* Fixed Header */}
@@ -318,6 +319,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    maxHeight: "60%",
   },
   scrollContent: {
     paddingHorizontal: 24,

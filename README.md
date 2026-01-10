@@ -126,11 +126,12 @@ This allows you to personalize your home screen with photos, patterns, or artwor
 
 ## Technical Details
 
-- Built with Expo SDK 53 and React Native 0.79.2
+- Built with Expo SDK 53 and React Native 0.76.7
 - Uses OpenAI's gpt-4o-transcribe for voice-to-text
 - State management with Zustand + AsyncStorage for persistence
 - Native iOS design following Apple Human Interface Guidelines
 - Haptic feedback for enhanced user experience
+- All layout styles use inline React Native StyleSheet (not NativeWind className) for cross-platform compatibility
 
 ## Android APK Build (Windows)
 

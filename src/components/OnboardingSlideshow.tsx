@@ -171,6 +171,7 @@ export const OnboardingSlideshow: React.FC<OnboardingSlideshowProps> = ({
       animationType="fade"
       transparent={false}
       onRequestClose={handleComplete}
+      presentationStyle="fullScreen"
     >
       <View style={{ flex: 1, backgroundColor: "#111827" }}>
         <ScrollView
